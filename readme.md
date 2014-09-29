@@ -16,8 +16,16 @@ Install npms
 
 ## API
 
+## League
+
 	/fantasy/league/:leagueCode/:responseType
 
 - leagueCode: Enter the league code found in the URL - http://fantasy.premierleague.com/my-leagues/:leagueCode/standings/
 - responseType: return the data in three different ways, api, html, gecko
 
+## Manager
+
+	/fantasy/league/:teamCode/overview
+
+- teamCode: Enter the league code found in the URL - http://fantasy.premierleague.com/entry/:teamCode/history/
+- responseType: currently only support overview

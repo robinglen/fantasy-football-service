@@ -1,38 +1,95 @@
+var config = require('../../config/config');
 var request = require('request');
 var async = require('async');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 
 /**
- * @param  {string}  leagueCode
+ * @param  {object}  locals
  * @return {string} 
  */
-function buildLeagueURL (leagueCode) {
- var leagueURL = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
- return  leagueURL({ 'code': leagueCode });
+function buildLeagueURL (locals) {
+  var url;
+ if (locals.dataType==='league') {
+  url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
+ } else {
+  url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
+ }
+ return  url({ 'code': locals.code });
 }
 
 /**
- * @param  {string} leagueURL
+ * @param  {string} url
  * @param {string} requestType
  * @param {function} cb
  */
-function init(leagueURL,requestType,cb) {
-	async.parallel({
-    	webpageBody : function (callback) {
-    		var websiteResponse = requestLeagueHTML(leagueURL, callback);
-    	}
-	}, function (err,results) {
+function init(url,locals,cb) {
+  async.parallel({
+      webpageBody : function (callback) {
+        var websiteResponse = requestLeagueHTML(url, callback);
+      }
+  }, function (err,results) {
+      if (locals.dataType==='league') {
+        cb(buildLeagueResponse(results,locals.requestType));
+      } else {
+        cb(buildManagerResponse(results,locals.requestType))
+      }
+  })
+}
+
+
+
+
+function buildLeagueResponse (results,requestType) {
   switch(requestType) {
     case "api":
-      cb(buildLeagueObj(results.webpageBody));
+      return buildLeagueObj(results.webpageBody);
     case "gecko":
-      cb(buildGeckoResponse(results.webpageBody));   
+      return buildGeckoResponse(results.webpageBody);   
     default:
-      cb(buildHTML(results.webpageBody));
-    }    
-	});
+      return buildHTML(results.webpageBody);   
+  }  
 }
+
+
+function buildManagerResponse (results,requestType) {
+  return buildManagerObj(results.webpageBody);
+}
+
+/**
+ * @param  {string} html
+ */
+function buildManagerObj (html) {
+  $ = cheerio.load(html);
+  var arr = [];
+  var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
+  var arr = [];
+  // map each team to an object
+  for (i = 1; i <= seasonHistoryLength; i++) { 
+    var element = '.ismPrimaryNarrow section:nth-of-type(1) table tr:nth-child(' + i +')';
+    var obj = {
+      gameWeek: $(element + ' td.ismCol1').text(),
+      gameWeekPoints: $(element + ' td.ismCol2').text(),
+      gameWeekRank: $(element + ' td.ismCol3').text(),
+      transfersMade: $(element + ' td.ismCol4').text(),
+      transfersCost: $(element + ' td.ismCol5').text(),
+      teamValue: $(element + ' td.ismCol6').text(),
+      overallPoints: $(element + ' td.ismCol7').text(),
+      overallRank: $(element + ' td.ismCol7').text(),
+      positionMovement: checkPositionMovement($(element + ' td.ismCol8 img').attr('src')),
+    }
+    arr.push(obj)
+  }
+  return {
+    manager: $('.ismSection2').text(),
+    team: $('.ismSection3').text(),
+    performance : {
+      current: arr
+    }
+  }
+}
+
+
 
 
 /**
@@ -83,7 +140,10 @@ function buildLeagueObj (html) {
     var obj = {
       positionMovement: checkPositionMovement($(element + ' td:nth-child(1) img').attr('src')),
       position: $(element + ' td:nth-child(2)').text(),
-      team: $(element + ' td:nth-child(3)').text(),
+      team: {
+        name: $(element + ' td:nth-child(3)').text(),
+        url: buildTeamHistoryURL($(element + ' td:nth-child(3) a').attr('href'))
+      },
       manager: $(element + ' td:nth-child(4)').text(),
       gameWeek: $(element + ' td:nth-child(5)').text(),
       total: $(element + ' td:nth-child(6)').text(),
@@ -94,6 +154,13 @@ function buildLeagueObj (html) {
 }
 
 
+/**
+ * @param  {string} href
+ */
+function buildTeamHistoryURL(href) {
+  var teamID = href.split('/entry/')[1].split('/')[0];
+  return config.URL + '/fantasy/team/' + teamID + '/overview';
+}
 
 /**
  * @param  {string} imageURL

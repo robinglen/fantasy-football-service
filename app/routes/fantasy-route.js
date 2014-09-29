@@ -6,20 +6,21 @@ var config  = require('../../config/config'),
 
 var middleware = {
 	// middleware to pick up request criteria
-	buildResponseType: function (req, res, next) {
+	fantasyRequest: function (req, res, next) {
 		var obj = {
+			dataType:  req.params.dataType == 'manager' ? 'manager' : 'league',
 			code:  req.params.code !== undefined ? req.params.code : '4526',
 			requestType:  req.params.request !== undefined ? req.params.request : 'api'
 		};
 		res.locals = obj;
 		next();	
-	}
+	},
 };
 
 // route for survice
 var routes = {
 	init: function (server) {
-		server.get('/fantasy/league/:code/:request', middleware.buildResponseType, fantasyController.init);
+		server.get('/fantasy/:dataType/:code/:request', middleware.fantasyRequest, fantasyController.init);
 	}
 };
 
