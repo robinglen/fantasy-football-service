@@ -27,5 +27,5 @@ Install npms
 
 	/fantasy/league/:teamCode/overview
 
-- teamCode: Enter the league code found in the URL - http://fantasy.premierleague.com/entry/:teamCode/history/
+- teamCode: Enter the team code found in the URL - http://fantasy.premierleague.com/entry/:teamCode/history/
 - responseType: currently only support overview
