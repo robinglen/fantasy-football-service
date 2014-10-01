@@ -15,10 +15,11 @@ function buildLeagueURL (locals) {
       url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
       break;
     case "manager":
-      url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
-      break;
-    case "transfers":
-      url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/transfers/history/');
+      if (locals.requestType==='transfers') {
+        url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/transfers/history/');
+      } else {
+        url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
+      };
       break;
   } 
 
@@ -31,7 +32,6 @@ function buildLeagueURL (locals) {
  * @param {function} cb
  */
 function init(url,locals,cb) {
-  console.log(locals)
   async.parallel({
       webpageBody : function (callback) {
         var websiteResponse = requestLeagueHTML(url, callback);
@@ -50,8 +50,69 @@ function init(url,locals,cb) {
 
 
 function buildTransferResponse (html,managerID) {
-  //$ = cheerio.load(results.webpageBody);
-  return {message:'transfers coming soon'};
+  $ = cheerio.load(html);
+  var transferHistoryLength = $('.ismPrimaryNarrow .ismTable:nth-of-type(1) tr').length -1;
+  var transfers = [];
+  var collectOverview = collectManagerOverview($);
+  for (i = 1; i <= transferHistoryLength; i++) { 
+    var element = '.ismPrimaryNarrow .ismTable:nth-of-type(1) tr:nth-child(' + i +')';
+    var obj = {
+      date: $(element + ' td:nth-child(1)').text(),
+      playerOut: $(element + ' td:nth-child(2)').text(),
+      playerIn: $(element + ' td:nth-child(3)').text(),
+      gameWeek: $(element + ' td:nth-child(4)').text(),
+    }
+    transfers.push(obj);
+  }
+  var groupedTransfers = groupTransfers(transfers);
+  return {
+    manager: collectOverview.manager,
+    team: collectOverview.team,
+    url:buildManagerHistoryURL(managerID),
+    transfers: groupedTransfers    
+  }
+}
+
+
+function groupTransfers (transfersArr) {
+  var gameWeeks=[];
+  transfersArr.forEach(function(transfer) {
+    if (gameWeeks[transfer.gameWeek]) {
+      gameWeeks[transfer.gameWeek].players.push({
+          out:  transfer.playerOut,
+          in:  transfer.playerIn, 
+      });
+    } else {
+    gameWeeks[transfer.gameWeek] = {
+      title: 'Game week ' + transfer.gameWeek,
+      gameWeek:transfer.gameWeek,
+      players: [{
+        out:  transfer.playerOut,
+        in:  transfer.playerIn,
+      }]
+    };
+    }
+  });
+  
+  var normalisedArr = populateEmptyTransfers(gameWeeks);
+  return normalisedArr;
+}
+
+function populateEmptyTransfers(groupTransfersArr) {
+  groupTransfersArr.splice(0, 1);
+  var normalisedArr=[];
+  for (i = 0; i < groupTransfersArr.length; i++) { 
+
+    if (groupTransfersArr[i] && groupTransfersArr[i].gameWeek) {
+      normalisedArr.push(groupTransfersArr[i])
+    } else {
+      normalisedArr.push({
+        title: 'Game week ' + (i+1),
+        players: []        
+      })
+    }
+  };
+  return normalisedArr;
 }
 
 
@@ -90,6 +151,7 @@ function buildManagerOverviewResponse (html,managerID) {
   return {
     manager: collectOverview.manager,
     team: collectOverview.team,
+    averagePoints:collectGameWeekData.averagePoints,
     overall : {
       points:collectOverview.overallPoints,
       rank:collectOverview.overallRank,
@@ -138,7 +200,7 @@ function collectGameWeekRelated ($) {
   return {
     transfersMade: totalTransfers,
     transfersCost: totalTransfersCosts,
-    averagePoints: (weeklyPoints/seasonHistoryLength.length).toFixed(0),
+    averagePoints: (weeklyPoints/seasonHistoryLength).toFixed(0),
     overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
     overallRank: gameWeek[seasonHistoryLength-1].overallRank,
     positionMovement: gameWeek[seasonHistoryLength-1].positionMovement,
@@ -231,7 +293,7 @@ function buildLeagueObj (html) {
       team: $(element + ' td:nth-child(3)').text(), 
       manager: {
         name: $(element + ' td:nth-child(4)').text(),
-        url: buildManagerHistoryURL($(element + ' td:nth-child(3) a').attr('href'))
+        url: buildManagerHistoryURL(getCodeFromURL(element + ' td:nth-child(3) a').attr('href'))
       },
       gameWeek: $(element + ' td:nth-child(5)').text(),
       total: $(element + ' td:nth-child(6)').text(),
@@ -245,10 +307,14 @@ function buildLeagueObj (html) {
 /**
  * @param  {string} href
  */
-function buildManagerHistoryURL(href) {
-  var teamID = href.split('/entry/')[1].split('/')[0];
-  return config.URL + '/fantasy/manager/' + teamID + '/overview';
+function buildManagerHistoryURL(managerID) {
+  return config.URL + '/fantasy/manager/' + managerID + '/overview';
 }
+
+function getCodeFromURL(href) {
+  return href.split('/entry/')[1].split('/')[0];
+}
+
 
 /**
  * @param  {string} href
