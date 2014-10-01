@@ -1,5 +1,3 @@
-[ ![Codeship Status for thearegee/fantasy-football-service](https://www.codeship.io/projects/e13fce40-2b75-0132-8128-0ebbb5ae3d93/status)](https://www.codeship.io/projects/38552)
-
 # fantasy-league-service
 
 ## ABOUT
