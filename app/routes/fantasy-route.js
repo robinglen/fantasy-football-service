@@ -20,6 +20,11 @@ var middleware = {
 // route for survice
 var routes = {
 	init: function (server) {
+		server.get('/', function(req, res) {
+			helpers.buildJSONPayload(res,200,{
+				message:'fantasy-league-service'
+			});
+		});
 		server.get('/fantasy/:dataType/:code/:request', middleware.fantasyRequest, fantasyController.init);
 	}
 };
