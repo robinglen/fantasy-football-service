@@ -293,7 +293,7 @@ function buildLeagueObj (html) {
       team: $(element + ' td:nth-child(3)').text(), 
       manager: {
         name: $(element + ' td:nth-child(4)').text(),
-        url: buildManagerHistoryURL(getCodeFromURL(element + ' td:nth-child(3) a').attr('href'))
+        url: buildManagerHistoryURL(getCodeFromURL($(element + ' td:nth-child(3) a').attr('href')))
       },
       gameWeek: $(element + ' td:nth-child(5)').text(),
       total: $(element + ' td:nth-child(6)').text(),
