@@ -10,11 +10,18 @@ var _ = require('lodash');
  */
 function buildLeagueURL (locals) {
   var url;
- if (locals.dataType==='league') {
-  url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
- } else {
-  url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
- }
+  switch(locals.dataType) {
+    case "league":
+      url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
+      break;
+    case "manager":
+      url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
+      break;
+    case "transfers":
+      url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/transfers/history/');
+      break;
+  } 
+
  return  url({ 'code': locals.code });
 }
 
@@ -24,19 +31,28 @@ function buildLeagueURL (locals) {
  * @param {function} cb
  */
 function init(url,locals,cb) {
+  console.log(locals)
   async.parallel({
       webpageBody : function (callback) {
         var websiteResponse = requestLeagueHTML(url, callback);
       }
   }, function (err,results) {
-      if (locals.dataType==='league') {
-        cb(buildLeagueResponse(results,locals.requestType));
-      } else {
-        cb(buildManagerResponse(results,locals.requestType))
-      }
+      switch(locals.dataType) {
+        case "league":
+          cb(buildLeagueResponse(results,locals.requestType));
+          break;
+        case "manager":
+          cb(buildManagerResponse(results,locals.requestType,locals.code));
+          break;
+      } 
   })
 }
 
+
+function buildTransferResponse (html,managerID) {
+  //$ = cheerio.load(results.webpageBody);
+  return {message:'transfers coming soon'};
+}
 
 
 
@@ -52,14 +68,17 @@ function buildLeagueResponse (results,requestType) {
 }
 
 
-function buildManagerResponse (results,requestType) {
-  return buildManagerObj(results.webpageBody);
+function buildManagerResponse (results,dataType,managerID) {
+  switch(dataType) {
+    case "overview":
+      return buildManagerOverviewResponse(results.webpageBody,managerID);
+    case "transfers":
+      return buildTransferResponse(results.webpageBody,managerID);     
+  }   
 }
 
-/**
- * @param  {string} html
- */
-function buildManagerObj (html) {
+
+function buildManagerOverviewResponse (html,managerID) {
   $ = cheerio.load(html);
   var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
   var gameWeek = [];
@@ -80,11 +99,14 @@ function buildManagerObj (html) {
     transfers :{
       transfersMade:collectGameWeekData.transfersMade,
       transfersCost:collectGameWeekData.transfersCost,
+      url: buildTransferHistoryURL(managerID)
     },
     thisSeason : collectGameWeekData.thisSeason,
     previousSeasons: collectCareerHistory($)
   }
 }
+
+
 
 
 function collectGameWeekRelated ($) {
@@ -101,7 +123,7 @@ function collectGameWeekRelated ($) {
     totalTransfers= totalTransfers + Number($(element + ' td.ismCol4').text());
     totalTransfersCosts= totalTransfersCosts +Number($(element + ' td.ismCol5').text());
     var obj = {
-      gameWeek: $(element + ' td.ismCol1').text(),
+      title: $(element + ' td.ismCol1').text(),
       gameWeekPoints: Number($(element + ' td.ismCol2').text()),
       gameWeekRank: $(element + ' td.ismCol3').text(),
       transfersMade: Number($(element + ' td.ismCol4').text()),
@@ -209,7 +231,7 @@ function buildLeagueObj (html) {
       team: $(element + ' td:nth-child(3)').text(), 
       manager: {
         name: $(element + ' td:nth-child(4)').text(),
-        url: buildTeamHistoryURL($(element + ' td:nth-child(3) a').attr('href'))
+        url: buildManagerHistoryURL($(element + ' td:nth-child(3) a').attr('href'))
       },
       gameWeek: $(element + ' td:nth-child(5)').text(),
       total: $(element + ' td:nth-child(6)').text(),
@@ -223,10 +245,18 @@ function buildLeagueObj (html) {
 /**
  * @param  {string} href
  */
-function buildTeamHistoryURL(href) {
+function buildManagerHistoryURL(href) {
   var teamID = href.split('/entry/')[1].split('/')[0];
   return config.URL + '/fantasy/manager/' + teamID + '/overview';
 }
+
+/**
+ * @param  {string} href
+ */
+function buildTransferHistoryURL(managerID) {
+  return config.URL + '/fantasy/manager/' + managerID + '/transfers';
+}
+
 
 /**
  * @param  {string} imageURL
