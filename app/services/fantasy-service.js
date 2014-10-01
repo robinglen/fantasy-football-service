@@ -66,13 +66,40 @@ function buildManagerObj (html) {
   var weeklyPoints = [];
   var totalTransfers = [];
   var totalTransfersCosts = [];
+  var collectOverview = collectManagerOverview($);
+  var collectGameWeekData = collectGameWeekRelated($);
+  return {
+    manager: collectOverview.manager,
+    team: collectOverview.team,
+    overall : {
+      points:collectOverview.overallPoints,
+      rank:collectOverview.overallRank,
+      rankPosition:collectGameWeekData.thisSeason[seasonHistoryLength-1].positionMovement,
+      teamValue:collectGameWeekData.thisSeason[seasonHistoryLength-1].teamValue,
+    },
+    transfers :{
+      transfersMade:collectGameWeekData.transfersMade,
+      transfersCost:collectGameWeekData.transfersCost,
+    },
+    thisSeason : collectGameWeekData.thisSeason,
+    previousSeasons: collectCareerHistory($)
+  }
+}
 
+
+function collectGameWeekRelated ($) {
+ var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
+  var gameWeek = [];
+  var weeklyPoints = 0;
+  var totalTransfers = 0;
+  var totalTransfersCosts = 0;
+  var collectOverview = collectManagerOverview($);
   // map each team to an object
   for (i = 1; i <= seasonHistoryLength; i++) { 
     var element = '.ismPrimaryNarrow section:nth-of-type(1) table tr:nth-child(' + i +')';
-    weeklyPoints.push(Number($(element + ' td.ismCol2').text()));
-    totalTransfers.push(Number($(element + ' td.ismCol4').text()));
-    totalTransfersCosts.push(Number($(element + ' td.ismCol5').text()));
+    weeklyPoints = weeklyPoints + Number($(element + ' td.ismCol2').text());
+    totalTransfers= totalTransfers + Number($(element + ' td.ismCol4').text());
+    totalTransfersCosts= totalTransfersCosts +Number($(element + ' td.ismCol5').text());
     var obj = {
       gameWeek: $(element + ' td.ismCol1').text(),
       gameWeekPoints: Number($(element + ' td.ismCol2').text()),
@@ -87,38 +114,47 @@ function buildManagerObj (html) {
     gameWeek.push(obj)
   }
   return {
-    manager: $('.ismSection2').text(),
-    team: $('.ismSection3').text(),
-    transfersMade: scoreArray(totalTransfers),
-    transfersCost: scoreArray(totalTransfers),
-    averagePoints: average(weeklyPoints),
+    transfersMade: totalTransfers,
+    transfersCost: totalTransfersCosts,
+    averagePoints: (weeklyPoints/seasonHistoryLength.length).toFixed(0),
     overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
     overallRank: gameWeek[seasonHistoryLength-1].overallRank,
     positionMovement: gameWeek[seasonHistoryLength-1].positionMovement,
     teamValue:gameWeek[seasonHistoryLength-1].teamValue,
-    performance : {
-      current: gameWeek
-    }
+    thisSeason : gameWeek,
+  }  
+}
+
+
+
+function collectManagerOverview ($) {
+  return {
+    manager: $('.ismSection2').text(),
+    team: $('.ismSection3').text(),  
+    overallPoints: $('.ismDefList.ismRHSDefList dd:nth-of-type(1)').text(), 
+    overallRank: $('.ismDefList.ismRHSDefList dd:nth-of-type(2)').text() 
   }
 }
 
 
-function scoreArray (arr) {
-  var total = 0;
-  arr.forEach(function(score) {
-    total = total + score;
-  });
-  return total;
+function collectCareerHistory ($) {
+  var careerHistory =[];
+  var careerHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(2) table tr').length -1;
+  for (i = 1; i <= careerHistoryLength; i++) {
+    var element = '.ismPrimaryNarrow section:nth-of-type(2) table tr:nth-child(' + i +')';
+    var obj = {
+        season: $(element + ' td.ismCol1').text(),
+        points: $(element + ' td.ismCol2').text(),
+        rank: $(element + ' td.ismCol3').text()
+    }
+    careerHistory.push(obj); 
+  }
+  return careerHistory;
 }
 
 
-function average (arr) {
-  var total = 0;
-  arr.forEach(function(score) {
-    total = total + score;
-  });
-  return Number((total/arr.length).toFixed(0));
-}
+
+
 
 
 
