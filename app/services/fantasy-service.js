@@ -49,8 +49,25 @@ function init(url,locals,cb) {
 }
 
 
+function collectWildCard ($) {
+  var wildCardGameWeeks = [];
+  if ($('.ismPrimaryNarrow .ismTable:nth-of-type(2) tr th:nth-of-type(1)').text()=="Date") {
+    var wildCardHistoryLength = $('.ismPrimaryNarrow .ismTable:nth-of-type(2) tbody tr').length;
+    for (i = 1; i <= wildCardHistoryLength; i++) { 
+      var element = '.ismPrimaryNarrow .ismTable:nth-of-type(2) tbody tr:nth-child(' + i +')';
+      wildCardGameWeeks.push($(element+ ' td:nth-child(2)').text());
+    }
+    return wildCardGameWeeks;
+  } else {
+    return false;
+  }
+
+}
+
+
 function buildTransferResponse (html,managerID) {
   $ = cheerio.load(html);
+  var wildCardObj = collectWildCard($)
   var transferHistoryLength = $('.ismPrimaryNarrow .ismTable:nth-of-type(1) tr').length -1;
   var transfers = [];
   var collectOverview = collectManagerOverview($);
@@ -65,8 +82,18 @@ function buildTransferResponse (html,managerID) {
     transfers.push(obj);
   }
   var groupedTransfers = groupTransfers(transfers);
+  var playedWildCard;
+  if (wildCardObj) {
+    playedWildCard = true;
+    wildCardObj.forEach(function(wildcard){
+      groupedTransfers[wildcard-1].willdcard = true;
+    })
+  } else {
+    playedWildCard= false;
+  }
   return {
     manager: collectOverview.manager,
+    playedWildCard:playedWildCard,
     team: collectOverview.team,
     url:buildManagerHistoryURL(managerID),
     transfers: groupedTransfers    
@@ -167,9 +194,6 @@ function buildManagerOverviewResponse (html,managerID) {
     previousSeasons: collectCareerHistory($)
   }
 }
-
-
-
 
 function collectGameWeekRelated ($) {
  var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
