@@ -1,0 +1,30 @@
+{
+  "name": "fantasy-league-frontend",
+  "version": "0.0.1",
+  "description": "front end for fantasy-league-service",
+  "main": "app.js",
+  "private": true,
+  "debug": {
+    "webport": 8080,
+    "webhost": "localhost",
+    "debugport": 5858
+  },
+  "scripts": {
+    "start": "node node_modules/grunt-cli/bin/grunt"
+  },
+  "engines": {
+    "node": "0.10.26",
+    "npm": "1.4.3"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "grunt": "0.4.4",
+    "grunt-cli": "0.1.13",
+    "grunt-env": "~0.4.1",
+    "grunt-nodemon": "0.2.1",
+    "grunt-concurrent": "1.0.0",
+    "load-grunt-tasks": "~0.4.0"
+  }
+}
