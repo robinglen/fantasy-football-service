@@ -2,7 +2,7 @@
 
 ## ABOUT
 
-A simple service to collect a fantasy.premierleague.com league table.
+A simple service to collect a fantasy.premierleague.com league and manager details.
 
 ## Set up
 
