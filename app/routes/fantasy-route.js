@@ -10,7 +10,8 @@ var middleware = {
 		var obj = {
 			dataType:  req.params.dataType == 'manager' ? 'manager' : 'league',
 			code:  req.params.code !== undefined ? req.params.code : '4526',
-			requestType:  req.params.request !== undefined ? req.params.request : 'api'
+			requestType:  req.params.request !== undefined ? req.params.request : 'api',
+			gameweek: req.params.gameweek !== undefined ? req.params.gameweek : '1'
 		};
 		res.locals = obj;
 		next();	
@@ -26,6 +27,7 @@ var routes = {
 			});
 		});
 		server.get('/fantasy/:dataType/:code/:request', middleware.fantasyRequest, fantasyController.init);
+		server.get('/fantasy/:dataType/:code/:request/:gameweek', middleware.fantasyRequest, fantasyController.init);
 	}
 };
 

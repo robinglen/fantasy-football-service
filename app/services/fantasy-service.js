@@ -10,20 +10,22 @@ var _ = require('lodash');
  */
 function buildLeagueURL (locals) {
   var url;
-  switch(locals.dataType) {
-    case "league":
-      url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
-      break;
-    case "manager":
-      if (locals.requestType==='transfers') {
+  if (locals.dataType==='manager') {
+    switch(locals.requestType) {
+      case 'transfers':
         url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/transfers/history/');
-      } else {
+        break;
+      case  'overview':
         url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
-      };
-      break;
-  } 
-
- return  url({ 'code': locals.code });
+        break;
+      case  'gameweek':
+        url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/event-history/<%= gameweek %>');
+        break;   
+      }   
+    } else {
+      url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
+    }
+ return  url({ 'code': locals.code, 'gameweek':locals.gameweek });
 }
 
 /**
@@ -37,14 +39,11 @@ function init(url,locals,cb) {
         var websiteResponse = requestLeagueHTML(url, callback);
       }
   }, function (err,results) {
-      switch(locals.dataType) {
-        case "league":
-          cb(buildLeagueResponse(results,locals.requestType));
-          break;
-        case "manager":
-          cb(buildManagerResponse(results,locals.requestType,locals.code));
-          break;
-      } 
+    if (locals.dataType==='manager') {
+      cb(buildManagerResponse(results,locals.requestType,locals.code));
+    } else {
+      cb(buildLeagueResponse(results,locals.requestType));
+    }
   })
 }
 
@@ -161,8 +160,11 @@ function buildManagerResponse (results,dataType,managerID) {
     case "overview":
       return buildManagerOverviewResponse(results.webpageBody,managerID);
     case "transfers":
-      return buildTransferResponse(results.webpageBody,managerID);     
-  }   
+      return buildTransferResponse(results.webpageBody,managerID); 
+    case "gameweek":
+      return {message: 'gameweek break down coming soon'};         
+  } 
+
 }
 
 
@@ -174,7 +176,7 @@ function buildManagerOverviewResponse (html,managerID) {
   var totalTransfers = [];
   var totalTransfersCosts = [];
   var collectOverview = collectManagerOverview($);
-  var collectGameWeekData = collectGameWeekRelated($);
+  var collectGameWeekData = collectGameWeekRelated($,managerID);
   return {
     manager: collectOverview.manager,
     team: collectOverview.team,
@@ -195,7 +197,7 @@ function buildManagerOverviewResponse (html,managerID) {
   }
 }
 
-function collectGameWeekRelated ($) {
+function collectGameWeekRelated ($,managerID) {
  var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
   var gameWeek = [];
   var weeklyPoints = 0;
@@ -217,7 +219,8 @@ function collectGameWeekRelated ($) {
       teamValue: $(element + ' td.ismCol6').text(),
       overallPoints: Number($(element + ' td.ismCol7').text()),
       overallRank: $(element + ' td.ismCol8').text(),
-      positionMovement: checkPositionMovement($(element + ' td.ismCol9 img').attr('src'))
+      positionMovement: checkPositionMovement($(element + ' td.ismCol9 img').attr('src')),
+      url: buildGameweekOverviewURL(managerID,i)
     }
     gameWeek.push(obj)
   }
@@ -329,7 +332,7 @@ function buildLeagueObj (html) {
 
 
 /**
- * @param  {string} href
+ * @param  {string} managerID
  */
 function buildManagerHistoryURL(managerID) {
   return config.URL + '/fantasy/manager/' + managerID + '/overview';
@@ -341,12 +344,20 @@ function getCodeFromURL(href) {
 
 
 /**
- * @param  {string} href
+ * @param  {string} managerID
  */
 function buildTransferHistoryURL(managerID) {
   return config.URL + '/fantasy/manager/' + managerID + '/transfers';
 }
 
+
+
+/**
+ * @param  {string} href
+ */
+function buildGameweekOverviewURL(managerID,gameweek) {
+  return config.URL + '/fantasy/manager/' + managerID + '/gameweek/' + gameweek;
+}
 
 /**
  * @param  {string} imageURL
