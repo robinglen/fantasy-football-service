@@ -162,10 +162,49 @@ function buildManagerResponse (results,dataType,managerID) {
     case "transfers":
       return buildTransferResponse(results.webpageBody,managerID); 
     case "gameweek":
-      return {message: 'gameweek break down coming soon'};         
+     return buildManagerGameweekResponse(results.webpageBody,managerID); 
   } 
 
 }
+
+function buildManagerGameweekResponse (html,managerID) {
+  $ = cheerio.load(html);
+  var collectOverview = collectManagerOverview($);
+  var gameweekPoints = Number($('.ismSBPrimary div').text().split('pts')[0]);
+  var gameweekAveragePoints = Number($('.ismSBSecondaryVal').text().split('pts')[0]);
+  var gameweekHighestPoints = Number($('.ismStatLink').text().split('pts')[0]);
+  var teamSheet = buildTeamLineUp($('.ismPitchContainer').html());
+  return {
+    manager: collectOverview.manager,
+    team: collectOverview.team,
+    gameweekPoints: gameweekPoints,
+    gameweekAveragePoints:gameweekAveragePoints,
+    gameweekHighestPoints:gameweekHighestPoints,
+    teamSheet: teamSheet   
+  }
+}
+
+function buildTeamLineUp (pitchHTML) {
+  var $ = cheerio.load(pitchHTML);
+  var goalkeeper = buildPlayerObject($('.ismPitchRow1 .ismPitchCell:nth-of-type(3)').html());
+  return {
+    goalkeeper: goalkeeper
+  }
+}
+
+function buildPlayerObject (positionHTML) {
+  var $ = cheerio.load(positionHTML);
+  var player = {
+    name: $('.ismElementDetail .ismPitchWebName').text(),
+    points: Number($('.ismElementDetail .ismPitchStat').text()),
+    club: $('.ismShirtContainer img').attr('title'),
+    captain: $('.JS_ISM_CAPTAIN .ismCaptain').hasClass('ismCaptainOn'),
+    viceCaptain: $('.JS_ISM_CAPTAIN .ismViceCaptain').hasClass('ismViceCaptainOn'),
+    dreamteam: $('.JS_ISM_DREAMTEAM a').hasClass('ismDreamTeam')   
+  }
+  return player
+}
+
 
 
 function buildManagerOverviewResponse (html,managerID) {
