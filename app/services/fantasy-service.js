@@ -187,42 +187,39 @@ function buildManagerGameweekResponse (html,managerID) {
 function buildTeamLineUp (pitchHTML) {
   var $ = cheerio.load(pitchHTML);
   var goalkeeper = buildPlayerObject($('.ismPitchRow1 .ismPitchCell:nth-of-type(3)').html());
-  //var defence = collectPlayersInPosition($('.ismPitchRow2').html());
+  var defence = collectPlayersInPosition($('.ismPitchRow2').html());
+  var midfield = collectPlayersInPosition($('.ismPitchRow3').html());
+  var attack = collectPlayersInPosition($('.ismPitchRow4').html());
   return {
-    goalkeeper: goalkeeper
+    goalkeeper: goalkeeper,
+    defence:defence,
+    midfield:midfield,
+    attack: attack
   }
 }
 
 function collectPlayersInPosition (pitchRowHTML) {
   var $ = cheerio.load(pitchRowHTML);
   var positionArr = [];
-  for (i = 1; i <= $('.ismPitchCell').length; i++) {
-    // TODO: THIS IS NOT WORKING, NOT SURE WHY
-    //console.log($('.ismPitchCell:nth-of-type(3)').html())
-    // var playerHMTL = $('.ismPitchCell:nth-of-type('+i+')').html();
-    // var player = buildPlayerObject(playerHMTL) 
-    // if (player) {
-    //   positionArr.push(player)
-    // }
-  }
-  console.log(positionArr)
+  $('.ismPitchCell').each(function(i, elem) {
+    if ($(this)[0].children.length>0) {
+      positionArr.push(buildPlayerObject($(this).html()));
+    }
+  });
+  return positionArr;
 
 }
 
 function buildPlayerObject (positionHTML) {
   var $ = cheerio.load(positionHTML);
-  if ($('.ismPitchElement').length>0) {
     return {
-      name: $('.ismElementDetail .ismPitchWebName').text(),
+      name: $('.ismElementDetail .ismPitchWebName').text().replace(/ /g,''),
       points: Number($('.ismElementDetail .ismPitchStat').text()),
       club: $('.ismShirtContainer img').attr('title'),
       captain: $('.JS_ISM_CAPTAIN .ismCaptain').hasClass('ismCaptainOn'),
       viceCaptain: $('.JS_ISM_CAPTAIN .ismViceCaptain').hasClass('ismViceCaptainOn'),
       dreamteam: $('.JS_ISM_DREAMTEAM a').hasClass('ismDreamTeam')   
     }
-  } else {
-    return null
-  }  
 }
 
 
