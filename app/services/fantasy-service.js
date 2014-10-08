@@ -183,6 +183,8 @@ function buildManagerGameweekResponse (html,managerID) {
   var gameweekAveragePoints = Number($('.ismSBSecondaryVal').text().split('pts')[0]);
   var gameweekHighestPoints = Number($('.ismStatLink').text().split('pts')[0]);
   var teamSheet = buildTeamLineUp($('.ismPitchContainer').html());
+  var subbedPlayers = collectSubbedPlayers($('table.ismTable:nth-of-type(2)').html())
+
   return {
     manager: collectOverview.manager,
     team: collectOverview.team,
@@ -209,6 +211,12 @@ function buildTeamLineUp (pitchHTML) {
   }
 }
 
+function collectSubbedPlayers (subsHTML) {
+  //console.log(subsHTML)
+  //var $ = cheerio.load(pitchHTML);
+}
+
+
 function collectPlayersInPosition (pitchRowHTML) {
   var $ = cheerio.load(pitchRowHTML);
   var positionArr = [];
@@ -218,7 +226,6 @@ function collectPlayersInPosition (pitchRowHTML) {
     }
   });
   return positionArr;
-
 }
 
 function buildPlayerObject (positionHTML) {
