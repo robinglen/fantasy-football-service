@@ -4,6 +4,9 @@ var async = require('async');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 
+// TODO: once I get all of the endpoints of data I want this need to be cleaned up and refactored badly
+
+
 /**
  * @param  {object}  locals
  * @return {string} 
@@ -11,16 +14,22 @@ var _ = require('lodash');
 function buildLeagueURL (locals) {
   var url;
   if (locals.dataType==='manager') {
+    // rewrite so end points more generic
     switch(locals.requestType) {
       case 'transfers':
+        // in and out -  include player ID in response, get from href
         url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/transfers/history/');
         break;
       case  'overview':
+        // historic data, data about manger, team supported, country etc
         url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/history/');
         break;
       case  'gameweek':
+        // all information about the week, link to players
         url = _.template('http://fantasy.premierleague.com/entry/<%= code %>/event-history/<%= gameweek %>');
-        break;   
+        break;
+        // add end points for player data
+        // add enpoints for teams - there is a big old data object in the transfer page but you need to log in to access it :(
       }   
     } else {
       url = _.template('http://fantasy.premierleague.com/my-leagues/<%= code %>/standings/');
@@ -190,11 +199,13 @@ function buildTeamLineUp (pitchHTML) {
   var defence = collectPlayersInPosition($('.ismPitchRow2').html());
   var midfield = collectPlayersInPosition($('.ismPitchRow3').html());
   var attack = collectPlayersInPosition($('.ismPitchRow4').html());
+  var bench = collectPlayersInPosition($('.ismBench').html());
   return {
     goalkeeper: goalkeeper,
     defence:defence,
     midfield:midfield,
-    attack: attack
+    attack: attack,
+    bench: bench
   }
 }
 
@@ -212,12 +223,24 @@ function collectPlayersInPosition (pitchRowHTML) {
 
 function buildPlayerObject (positionHTML) {
   var $ = cheerio.load(positionHTML);
-    return {
-      name: $('.ismElementDetail .ismPitchWebName').text().replace(/ /g,''),
+    var classObj = JSON.parse($('.ismPitchElement').attr('class').split('ismPitchElement')[1]);
+    // If this "object" class disapears can get by these classes
+      /*
       points: Number($('.ismElementDetail .ismPitchStat').text()),
-      club: $('.ismShirtContainer img').attr('title'),
       captain: $('.JS_ISM_CAPTAIN .ismCaptain').hasClass('ismCaptainOn'),
       viceCaptain: $('.JS_ISM_CAPTAIN .ismViceCaptain').hasClass('ismViceCaptainOn'),
+      */
+    return {
+      id: classObj.id,
+      // this ID can be used to get player data: http://fantasy.premierleague.com/web/api/elements/522/
+      name: $('.ismElementDetail .ismPitchWebName').text().trim(),
+      points: classObj.event_points,
+      club: {
+        code: classObj.team,
+        name: $('.ismShirtContainer img').attr('title')
+      },
+      captain: classObj.is_captain,
+      viceCaptain: classObj.is_vice_captain,
       dreamteam: $('.JS_ISM_DREAMTEAM a').hasClass('ismDreamTeam')   
     }
 }
