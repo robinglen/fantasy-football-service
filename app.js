@@ -1,23 +1,22 @@
 'use strict';
 
-/**
- * Module dependencies.
- */
-var restify = require('restify');
+// config
+var config = require('./config/config');
 
-/**
- * Setup server
- */
-var server = restify.createServer();
+// restify config
+var server = require('./app/utilities/restify').appConfiguration.init();
 
-server.use(restify.queryParser());
+
+// healthcheck route
+require('./app/routes/healthcheck').routes.init(server);
+
+// manager route
+//require('./app/routes/manager').routes.init(server);
 
 // fantasy service route
 require('./app/routes/fantasy-route.js').routes.init(server);
 
-// Start the app by listening on <port>
-var port = process.env.PORT || 8080;
 
-server.listen(port, function() {
+server.listen(config.PORT, function() {
   console.log('%s listening at %s', server.name, server.url);
 });	

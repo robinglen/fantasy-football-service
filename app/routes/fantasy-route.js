@@ -21,11 +21,6 @@ var middleware = {
 // route for survice
 var routes = {
 	init: function (server) {
-		server.get('/', function(req, res) {
-			helpers.buildJSONPayload(res,200,{
-				message:'fantasy-league-service'
-			});
-		});
 		// need start doing these routes proper
 		server.get('/fantasy/:dataType/:code/:request', middleware.fantasyRequest, fantasyController.init);
 		server.get('/fantasy/:dataType/:code/:request/:gameweek', middleware.fantasyRequest, fantasyController.init);
