@@ -8,8 +8,8 @@ var managerController = {
 
     init: function(req, res) {
        var managerOverviewURL = managerService.utilities.generateURL(res.locals);
-       collectHTML(managerOverviewURL,function(err, res){
-       		managerService.responseGeneration.buildManagerOverviewResponse(res.body)
+       collectHTML(managerOverviewURL,function(err, htmlResponse){
+       		managerService.responseGeneration.buildManagerOverviewResponse(htmlResponse.body,res.locals.managerId);
        })
     }
 
