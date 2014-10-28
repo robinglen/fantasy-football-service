@@ -31,7 +31,7 @@ var utilities = {
   var responseGeneration = {
     buildManagerOverviewResponse: function (cheerioBody) {
       var $ = cheerioBody;
-      var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
+      var seasonHistoryLength = $(mangerOverviewSelectors.gameweekOverviewTable).length -1;
       console.log(seasonHistoryLength);
       /*
       var gameWeek = [];
