@@ -31,18 +31,17 @@ var utilities = {
   var responseGeneration = {
     buildManagerOverviewResponse: function (cheerioBody,managerId) {
       var $ = cheerioBody;
-      var seasonHistoryLength = $(mangerOverviewSelectors.gameweekOverviewTable).length -1, 
+      var seasonHistoryLength = $(mangerOverviewSelectors.gameweekOverview.table).length -1, 
           gameWeek = [],
           weeklyPoints = [],
           totalTransfers = [],
           totalTransfersCosts = [],
           collectOverview = collectManagerOverview($);
           collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength);
-          console.log(collectOverview)
-      /*
       return {
         manager: collectOverview.manager,
         team: collectOverview.team,
+        gameweek: seasonHistoryLength,
         averagePoints:collectGameWeekData.averagePoints,
         overall : {
           points:collectOverview.overallPoints,
@@ -53,12 +52,11 @@ var utilities = {
         transfers :{
           transfersMade:collectGameWeekData.transfersMade,
           transfersCost:collectGameWeekData.transfersCost,
-          url: buildTransferHistoryURL(managerID)
+          url: buildTransferHistoryURL(managerId)
         },
         thisSeason : collectGameWeekData.thisSeason,
         previousSeasons: collectCareerHistory($)
       }
-      */
     }
   };
 
@@ -82,7 +80,7 @@ function collectManagerOverview ($) {
   }
 }
 
-function collectGameWeekRelated ($,managerID,seasonHistoryLength) {
+function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   var gameWeek = []
       weeklyPoints = 0
       totalTransfers = 0
@@ -91,82 +89,83 @@ function collectGameWeekRelated ($,managerID,seasonHistoryLength) {
  
   // map each team to an object
   for (i = 1; i <= seasonHistoryLength; i++) { 
-    var gameweekRow = _.template(mangerOverviewSelectors.gameweekOverviewTableRow,{number:i});
-
-  //   var element = '.ismPrimaryNarrow section:nth-of-type(1) table tr:nth-child(' + i +')';
-  //   weeklyPoints = weeklyPoints + Number($(element + ' td.ismCol2').text());
-  //   totalTransfers= totalTransfers + Number($(element + ' td.ismCol4').text());
-  //   totalTransfersCosts= totalTransfersCosts +Number($(element + ' td.ismCol5').text());
-  //   var obj = {
-  //     title: $(element + ' td.ismCol1').text(),
-  //     gameWeekPoints: Number($(element + ' td.ismCol2').text()),
-  //     gameWeekRank: $(element + ' td.ismCol3').text(),
-  //     transfersMade: Number($(element + ' td.ismCol4').text()),
-  //     transfersCost: Number($(element + ' td.ismCol5').text()),
-  //     teamValue: $(element + ' td.ismCol6').text(),
-  //     overallPoints: Number($(element + ' td.ismCol7').text()),
-  //     overallRank: $(element + ' td.ismCol8').text(),
-  //     positionMovement: checkPositionMovement($(element + ' td.ismCol9 img').attr('src')),
-  //     url: buildGameweekOverviewURL(managerID,i)
-  //   }
-  //   gameWeek.push(obj)
-  // }
-  // return {
-  //   transfersMade: totalTransfers,
-  //   transfersCost: totalTransfersCosts,
-  //   averagePoints: (weeklyPoints/seasonHistoryLength).toFixed(0),
-  //   overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
-  //   overallRank: gameWeek[seasonHistoryLength-1].overallRank,
-  //   positionMovement: gameWeek[seasonHistoryLength-1].positionMovement,
-  //   teamValue:gameWeek[seasonHistoryLength-1].teamValue,
-  //   thisSeason : gameWeek,
+    var gameweekRow = _.template(mangerOverviewSelectors.gameweekOverview.row,{number:i}),
+        gameWeekRowSelector = mangerOverviewSelectors.gameweekOverview.table + gameweekRow,
+    
+        obj = {
+          title: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.title).text(),
+          gameWeekPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.points).text()),
+          gameWeekRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.rank).text(),
+          transfersMade: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.transfers).text()),
+          transfersCost: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.transfersCosts).text()),
+          teamValue: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.value).text(),
+          overallPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallPoints).text()),
+          overallRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallRank).text(),
+          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src')),
+          url: buildGameweekOverviewURL(managerId,i)
+        };
+    weeklyPoints = weeklyPoints + obj.gameWeekPoints;
+    totalTransfers= totalTransfers + obj.transfersMade;
+    totalTransfersCosts= totalTransfersCosts + obj.transfersCost;
+    gameWeek.push(obj);
+  }
+  return {
+    transfersMade: totalTransfers,
+    transfersCost: totalTransfersCosts,
+    averagePoints: (weeklyPoints/seasonHistoryLength).toFixed(0),
+    overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
+    overallRank: gameWeek[seasonHistoryLength-1].overallRank,
+    positionMovement: gameWeek[seasonHistoryLength-1].positionMovement,
+    teamValue:gameWeek[seasonHistoryLength-1].teamValue,
+    thisSeason : gameWeek,
    }  
 }
 
-// /**
-//  * @param  {string} managerID
-//  */
-// function buildTransferHistoryURL(managerID) {
-//   return config.URL + '/fantasy/manager/' + managerID + '/transfers';
-// }
+/**
+ * @param  {string} managerID
+ */
+function buildTransferHistoryURL(managerId) {
+  return config.URL + '/fantasy/manager/' + managerId + '/transfers';
+}
 
 
-// function collectCareerHistory ($) {
-//   var careerHistory =[];
-//   var careerHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(2) table tr').length -1;
-//   for (i = 1; i <= careerHistoryLength; i++) {
-//     var element = '.ismPrimaryNarrow section:nth-of-type(2) table tr:nth-child(' + i +')';
-//     var obj = {
-//         season: $(element + ' td.ismCol1').text(),
-//         points: $(element + ' td.ismCol2').text(),
-//         rank: $(element + ' td.ismCol3').text()
-//     }
-//     careerHistory.push(obj); 
-//   }
-//   return careerHistory;
-// }
+function collectCareerHistory ($) {
+  var careerHistory =[];
+  var careerHistoryLength = $(mangerOverviewSelectors.careerHistory.table).length -1;
+  for (i = 1; i <= careerHistoryLength; i++) {
 
-// /**
-//  * @param  {string} href
-//  */
-// function buildGameweekOverviewURL(managerID,gameweek) {
-//   return config.URL + '/fantasy/manager/' + managerID + '/gameweek/' + gameweek;
-// }
+    var careerHistoryRow = _.template(mangerOverviewSelectors.careerHistory.row,{number:i}),
+        careerHistorySelector = mangerOverviewSelectors.careerHistory.table + careerHistoryRow,
+        obj = {
+          season: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.season).text(),
+          points: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.points).text(),
+          rank: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.rank).text()
+        };
+    careerHistory.push(obj); 
+  }
+  return careerHistory;
+}
+
+/**
+ * @param  {string} href
+ */
+function buildGameweekOverviewURL(managerId,gameweek) {
+  return config.URL + '/fantasy/manager/' + managerId + '/gameweek/' + gameweek;
+}
 
 
-// /**
-//  * @param  {string} imageURL
-//  */
-// function checkPositionMovement (imageURL) {
-
-//   switch (imageURL) {
-//     case "http://cdn.ismfg.net/static/img/new.png":
-//       return "-"
-//     case "http://cdn.ismfg.net/static/img/up.png":
-//       return "up"
-//     case "http://cdn.ismfg.net/static/img/down.png":
-//       return "down"
-//     default:
-//       return "-"
-//   }
-// }
+/**
+ * @param  {string} imageURL
+ */
+function checkPositionMovement (imageURL) {
+  switch (imageURL) {
+    case mangerOverviewSelectors.gameweekOverview.position.unchanged:
+      return "-"
+    case mangerOverviewSelectors.gameweekOverview.position.up:
+      return "up"
+    case mangerOverviewSelectors.gameweekOverview.position.down:
+      return "down"
+    default:
+      return "-"
+  }
+}

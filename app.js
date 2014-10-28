@@ -11,7 +11,7 @@ var server = require('./app/utilities/restify').appConfiguration.init();
 require('./app/routes/healthcheck').routes.init(server);
 
 // manager route
-//require('./app/routes/manager').routes.init(server);
+require('./app/routes/manager').routes.init(server);
 
 // fantasy service route
 require('./app/routes/fantasy-route').routes.init(server);
