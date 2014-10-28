@@ -10,7 +10,7 @@ module.exports.collectHTML = function(url, callback) {
 		if (!err) {
 			if (parseInt(res.statusCode, 10) === 200) {
 				var cheerioResponse = cheerio.load(body);
-				callback(err, {res:res,body:cheerio});
+				callback(err, {res:res,body:cheerioResponse});
 			} else {
 				callback(err, {res:res,body:body});
 			}

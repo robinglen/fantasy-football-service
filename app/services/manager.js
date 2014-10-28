@@ -3,9 +3,10 @@ var request = require('request');
 var async = require('async');
 var cheerio = require('cheerio');
 var _ = require('lodash');
+var mangerOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerOverview;
 
 
-var service = {
+var utilities = {
 
     generateURL: function(locals) {
       switch(locals.request) {
@@ -26,39 +27,51 @@ var service = {
     }
 };
 
+
+  var responseGeneration = {
+    buildManagerOverviewResponse: function (cheerioBody) {
+      var $ = cheerioBody;
+      var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
+      console.log(seasonHistoryLength);
+      /*
+      var gameWeek = [];
+      var weeklyPoints = [];
+      var totalTransfers = [];
+      var totalTransfersCosts = [];
+      var collectOverview = collectManagerOverview($);
+      var collectGameWeekData = collectGameWeekRelated($,managerID);
+      return {
+        manager: collectOverview.manager,
+        team: collectOverview.team,
+        averagePoints:collectGameWeekData.averagePoints,
+        overall : {
+          points:collectOverview.overallPoints,
+          rank:collectOverview.overallRank,
+          rankPosition:collectGameWeekData.thisSeason[seasonHistoryLength-1].positionMovement,
+          teamValue:collectGameWeekData.thisSeason[seasonHistoryLength-1].teamValue,
+        },
+        transfers :{
+          transfersMade:collectGameWeekData.transfersMade,
+          transfersCost:collectGameWeekData.transfersCost,
+          url: buildTransferHistoryURL(managerID)
+        },
+        thisSeason : collectGameWeekData.thisSeason,
+        previousSeasons: collectCareerHistory($)
+      }
+      */
+    }
+  };
+
 module.exports = {
-    service: service
+    utilities:utilities,
+    responseGeneration: responseGeneration
 };
 
 
-function buildManagerOverviewResponse (html,managerID) {
-  $ = cheerio.load(html);
-  var seasonHistoryLength = $('.ismPrimaryNarrow section:nth-of-type(1) table tr').length -1;
-  var gameWeek = [];
-  var weeklyPoints = [];
-  var totalTransfers = [];
-  var totalTransfersCosts = [];
-  var collectOverview = collectManagerOverview($);
-  var collectGameWeekData = collectGameWeekRelated($,managerID);
-  return {
-    manager: collectOverview.manager,
-    team: collectOverview.team,
-    averagePoints:collectGameWeekData.averagePoints,
-    overall : {
-      points:collectOverview.overallPoints,
-      rank:collectOverview.overallRank,
-      rankPosition:collectGameWeekData.thisSeason[seasonHistoryLength-1].positionMovement,
-      teamValue:collectGameWeekData.thisSeason[seasonHistoryLength-1].teamValue,
-    },
-    transfers :{
-      transfersMade:collectGameWeekData.transfersMade,
-      transfersCost:collectGameWeekData.transfersCost,
-      url: buildTransferHistoryURL(managerID)
-    },
-    thisSeason : collectGameWeekData.thisSeason,
-    previousSeasons: collectCareerHistory($)
-  }
-}
+
+
+
+
 
 function collectManagerOverview ($) {
   return {

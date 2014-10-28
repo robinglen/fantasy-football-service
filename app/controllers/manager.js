@@ -7,9 +7,9 @@ var managerController = {
     // controller
 
     init: function(req, res) {
-       var managerOverviewURL = managerService.service.generateURL(res.locals);
-       collectHTML(managerOverviewURL,function(err, body){
-       		console.log(body);
+       var managerOverviewURL = managerService.utilities.generateURL(res.locals);
+       collectHTML(managerOverviewURL,function(err, res){
+       		managerService.responseGeneration.buildManagerOverviewResponse(res.body)
        })
     }
 
