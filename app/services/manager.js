@@ -55,6 +55,7 @@ var utilities = {
           transfersCost:collectGameWeekData.transfersCost,
           url: buildTransferHistoryURL(managerId)
         },
+        leagues: collectClassicLeagues($),
         thisSeason : collectGameWeekData.thisSeason,
         careerHistory: collectCareerHistoryObj
       }
@@ -66,6 +67,23 @@ module.exports = {
     responseGeneration: responseGeneration
 };
 
+
+
+function collectClassicLeagues ($) {
+  var leagues = [];
+  var leaguesTableLength = $(mangerOverviewSelectors.classicLeagues.table).length -1;
+  for (i = 1; i <= leaguesTableLength; i++) { 
+    var leagueRow = _.template(mangerOverviewSelectors.classicLeagues.row,{number:i}),
+        leagueRowSelector = mangerOverviewSelectors.classicLeagues.table + leagueRow,
+        obj = {
+          name: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.league).text(),
+          position: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.rank).text(),
+          positionMovement: checkPositionMovement($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.img).attr('src'),mangerOverviewSelectors.classicLeagues.position)
+        };
+    leagues.push(obj)
+  }
+  return leagues;
+}
 
 
 
@@ -102,7 +120,7 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
           teamValue: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.value).text(),
           overallPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallPoints).text()),
           overallRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallRank).text(),
-          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src')),
+          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position),
           url: buildGameweekOverviewURL(managerId,i)
         };
     weeklyPoints = weeklyPoints + obj.gameWeekPoints;
@@ -135,7 +153,6 @@ function collectCareerHistory ($) {
   var careerHistoryObj ={};
   var careerHistoryLength = $(mangerOverviewSelectors.careerHistory.table).length -1;
   for (i = 1; i <= careerHistoryLength; i++) {
-
     var careerHistoryRow = _.template(mangerOverviewSelectors.careerHistory.row,{number:i}),
         careerHistorySelector = mangerOverviewSelectors.careerHistory.table + careerHistoryRow,
         obj = {
@@ -177,13 +194,13 @@ function buildGameweekOverviewURL(managerId,gameweek) {
 /**
  * @param  {string} imageURL
  */
-function checkPositionMovement (imageURL) {
+function checkPositionMovement (imageURL,postionObj) {
   switch (imageURL) {
-    case mangerOverviewSelectors.gameweekOverview.position.unchanged:
+    case postionObj.unchanged:
       return "-"
-    case mangerOverviewSelectors.gameweekOverview.position.up:
+    case postionObj.up:
       return "up"
-    case mangerOverviewSelectors.gameweekOverview.position.down:
+    case postionObj.down:
       return "down"
     default:
       return "-"
