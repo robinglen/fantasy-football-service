@@ -132,6 +132,7 @@ function buildTransferHistoryURL(managerId) {
 
 function collectCareerHistory ($) {
   var careerHistory =[];
+  var careerHistoryObj ={};
   var careerHistoryLength = $(mangerOverviewSelectors.careerHistory.table).length -1;
   for (i = 1; i <= careerHistoryLength; i++) {
 
@@ -145,10 +146,13 @@ function collectCareerHistory ($) {
     obj.averagePoints =  Number((obj.points/premierLeagueVariables.globals.gameweeks).toFixed(0));
     careerHistory.push(obj); 
   }
-  return {
-    careerAverage: Number(calculateCareerAverage(careerHistory)),
-    previousSeasons:careerHistory
+  if (careerHistory.length>0) {
+    careerHistoryObj = {
+      careerAverage: Number(calculateCareerAverage(careerHistory)),
+      previousSeasons:careerHistory     
+    }
   }
+  return careerHistoryObj
 }
 
 function calculateCareerAverage (careerHistoryArr) {
