@@ -5,6 +5,7 @@ var cheerio = require('cheerio');
 var _ = require('lodash');
 var mangerOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerOverview;
 var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
+var helpers = require(config.ROOT +'/app/helpers/index')
 
 var utilities = {
 
@@ -40,6 +41,7 @@ var utilities = {
           collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength),
           collectCareerHistoryObj = collectCareerHistory($);
       return {
+        id:managerId,
         manager: collectOverview.manager,
         team: collectOverview.team,
         gameweek: seasonHistoryLength,
@@ -52,8 +54,7 @@ var utilities = {
         },
         transfers :{
           transfersMade:collectGameWeekData.transfersMade,
-          transfersCost:collectGameWeekData.transfersCost,
-          url: buildTransferHistoryURL(managerId)
+          transfersCost:collectGameWeekData.transfersCost
         },
         leagues: collectClassicLeagues($),
         thisSeason : collectGameWeekData.thisSeason,
@@ -68,7 +69,6 @@ module.exports = {
 };
 
 
-
 function collectClassicLeagues ($) {
   var leagues = [];
   var leaguesTableLength = $(mangerOverviewSelectors.classicLeagues.table).length -1;
@@ -78,14 +78,13 @@ function collectClassicLeagues ($) {
         obj = {
           name: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.league).text(),
           position: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.rank).text(),
-          positionMovement: checkPositionMovement($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.img).attr('src'),mangerOverviewSelectors.classicLeagues.position)
+          positionMovement: checkPositionMovement($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.img).attr('src'),mangerOverviewSelectors.classicLeagues.position),
+          code: helpers.collectCodeFromUrl($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.league).attr('href'),'/my-leagues/')
         };
     leagues.push(obj)
   }
   return leagues;
 }
-
-
 
 
 
@@ -99,6 +98,8 @@ function collectManagerOverview ($) {
   }
 }
 
+
+// transgers made cones't include wildcard transfers
 function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   var gameWeek = []
       weeklyPoints = 0
@@ -120,8 +121,7 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
           teamValue: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.value).text(),
           overallPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallPoints).text()),
           overallRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallRank).text(),
-          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position),
-          url: buildGameweekOverviewURL(managerId,i)
+          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position)
         };
     weeklyPoints = weeklyPoints + obj.gameWeekPoints;
     totalTransfers= totalTransfers + obj.transfersMade;
@@ -139,14 +139,6 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
     thisSeason : gameWeek,
    }  
 }
-
-/**
- * @param  {string} managerID
- */
-function buildTransferHistoryURL(managerId) {
-  return config.URL + '/fantasy/manager/' + managerId + '/transfers';
-}
-
 
 function collectCareerHistory ($) {
   var careerHistory =[];
@@ -181,14 +173,6 @@ function calculateCareerAverage (careerHistoryArr) {
   return (totalPoints/totalGameWeeks).toFixed(0)
 }
 
-
-
-/**
- * @param  {string} href
- */
-function buildGameweekOverviewURL(managerId,gameweek) {
-  return config.URL + '/fantasy/manager/' + managerId + '/gameweek/' + gameweek;
-}
 
 
 /**

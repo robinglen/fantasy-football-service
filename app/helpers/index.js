@@ -1,5 +1,10 @@
 var helpers = (function() {
 
+
+	function collectCodeFromUrl(url,splitBefore) {
+		return url.split(splitBefore)[1].split('/')[0]
+	}
+
 	/**
 	 * @class setCacheHeader 
 	 * @param {object}	data
@@ -33,6 +38,7 @@ var helpers = (function() {
 	}
 
 	return {
+		collectCodeFromUrl:collectCodeFromUrl,
 		setCacheHeader:setCacheHeader,
 		buildJSONPayload:buildJSONPayload
 	};
