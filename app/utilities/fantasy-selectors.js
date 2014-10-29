@@ -1,6 +1,3 @@
-// config
-var config = require('../../config/config');
-
 var websiteSelectors = {
 
     managerOverview: {
@@ -27,7 +24,7 @@ var websiteSelectors = {
     			row: ':nth-child(<%= number %>)',
     			season: ' td.ismCol1',
     			points: ' td.ismCol2',
-    			rank: ' td.ismCol2'
+    			rank: ' td.ismCol3'
     		},
 
             

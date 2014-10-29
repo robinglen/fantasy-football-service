@@ -4,7 +4,7 @@ var async = require('async');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 var mangerOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerOverview;
-
+var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
 
 var utilities = {
 
@@ -37,7 +37,8 @@ var utilities = {
           totalTransfers = [],
           totalTransfersCosts = [],
           collectOverview = collectManagerOverview($);
-          collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength);
+          collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength),
+          collectCareerHistoryObj = collectCareerHistory($);
       return {
         manager: collectOverview.manager,
         team: collectOverview.team,
@@ -55,7 +56,7 @@ var utilities = {
           url: buildTransferHistoryURL(managerId)
         },
         thisSeason : collectGameWeekData.thisSeason,
-        previousSeasons: collectCareerHistory($)
+        careerHistory: collectCareerHistoryObj
       }
     }
   };
@@ -75,7 +76,7 @@ function collectManagerOverview ($) {
   return {
     manager: $(mangerOverviewSelectors.managerName).text(),
     team: $(mangerOverviewSelectors.teamName).text(),  
-    overallPoints: $(mangerOverviewSelectors.overallPoints).text(), 
+    overallPoints: Number($(mangerOverviewSelectors.overallPoints).text()), 
     overallRank: $(mangerOverviewSelectors.overallRank).text() 
   }
 }
@@ -112,7 +113,7 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   return {
     transfersMade: totalTransfers,
     transfersCost: totalTransfersCosts,
-    averagePoints: (weeklyPoints/seasonHistoryLength).toFixed(0),
+    averagePoints: Number((weeklyPoints/seasonHistoryLength).toFixed(0)),
     overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
     overallRank: gameWeek[seasonHistoryLength-1].overallRank,
     positionMovement: gameWeek[seasonHistoryLength-1].positionMovement,
@@ -138,13 +139,28 @@ function collectCareerHistory ($) {
         careerHistorySelector = mangerOverviewSelectors.careerHistory.table + careerHistoryRow,
         obj = {
           season: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.season).text(),
-          points: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.points).text(),
+          points:  Number($(careerHistorySelector + mangerOverviewSelectors.careerHistory.points).text()),
           rank: $(careerHistorySelector + mangerOverviewSelectors.careerHistory.rank).text()
         };
+    obj.averagePoints =  Number((obj.points/premierLeagueVariables.globals.gameweeks).toFixed(0));
     careerHistory.push(obj); 
   }
-  return careerHistory;
+  return {
+    careerAverage: Number(calculateCareerAverage(careerHistory)),
+    previousSeasons:careerHistory
+  }
 }
+
+function calculateCareerAverage (careerHistoryArr) {
+  var totalPoints = 0;
+  var totalGameWeeks = careerHistoryArr.length * premierLeagueVariables.globals.gameweeks;
+  careerHistoryArr.forEach(function(season){
+    totalPoints = totalPoints + season.points;
+  })
+  return (totalPoints/totalGameWeeks).toFixed(0)
+}
+
+
 
 /**
  * @param  {string} href
