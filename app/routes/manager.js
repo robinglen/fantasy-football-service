@@ -4,11 +4,21 @@ var config  = require('../../config/config'),
 	managerController = require(config.ROOT +'/app/controllers/manager');
 
 
+
 // route for survice
 var routes = {
 	init: function (server) {
-		// need start doing these routes proper
-		server.get('/fantasy/manager/:managerId/:request', managerMiddleware.setDefaults, managerController.managerController.init);
+
+		server.get('/fantasy/manager/:managerId/overview', 
+			managerMiddleware.setDefaults,
+			managerController.managerController.overview
+			);
+/*
+		server.get('/fantasy/manager/:managerId/transfers', 
+			managerMiddleware.setDefaults, 
+			managerController.managerController.init
+			);
+*/
 	}
 };
 

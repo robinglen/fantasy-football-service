@@ -4,8 +4,7 @@ var managerMiddleware = {
 
     setDefaults: function(req, res, next) {
         var obj = {
-            managerId:  req.params.managerId,
-            request:  req.params.request
+            managerId:  req.params.managerId
         };
         res.locals = obj;
         next();

@@ -7,27 +7,6 @@ var mangerOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selec
 var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
 var helpers = require(config.ROOT +'/app/helpers/index')
 
-var utilities = {
-
-    generateURL: function(locals) {
-      switch(locals.request) {
-        case 'transfers':
-          // in and out -  include player ID in response, get from href
-          url = _.template('http://fantasy.premierleague.com/entry/<%= managerId %>/transfers/history/');
-          break;
-        case  'overview':
-          // historic data, data about manger, team supported, country etc
-          url = _.template('http://fantasy.premierleague.com/entry/<%= managerId %>/history/');
-          break;
-        case  'gameweek':
-          // all information about the week, link to players
-          url = _.template('http://fantasy.premierleague.com/entry/<%= managerId %>/event-history/<%= gameweek %>');
-          break;
-        }
-      return  url({ 'managerId': locals.managerId, 'gameweek':locals.gameweek });
-    }
-};
-
 
   var responseGeneration = {
     buildManagerOverviewResponse: function (cheerioBody,managerId) {
@@ -64,7 +43,6 @@ var utilities = {
   };
 
 module.exports = {
-    utilities:utilities,
     responseGeneration: responseGeneration
 };
 
