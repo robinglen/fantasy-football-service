@@ -13,12 +13,12 @@ var routes = {
 			managerMiddleware.setDefaults,
 			managerController.managerController.overview
 			);
-/*
+
 		server.get('/fantasy/manager/:managerId/transfers', 
-			managerMiddleware.setDefaults, 
-			managerController.managerController.init
+			managerMiddleware.setDefaults,
+			managerController.managerController.transfers
 			);
-*/
+
 	}
 };
 

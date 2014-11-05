@@ -16,7 +16,7 @@ var helpers = require(config.ROOT +'/app/helpers/index')
           weeklyPoints = [],
           totalTransfers = [],
           totalTransfersCosts = [],
-          collectOverview = collectManagerOverview($);
+          collectOverview = responseGeneration.collectManagerOverview($);
           collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength),
           collectCareerHistoryObj = collectCareerHistory($);
       return {
@@ -39,7 +39,17 @@ var helpers = require(config.ROOT +'/app/helpers/index')
         thisSeason : collectGameWeekData.thisSeason,
         careerHistory: collectCareerHistoryObj
       }
+    },
+
+    collectManagerOverview: function ($) {
+      return {
+        manager: $(mangerOverviewSelectors.managerName).text(),
+        team: $(mangerOverviewSelectors.teamName).text(),  
+        overallPoints: Number($(mangerOverviewSelectors.overallPoints).text()), 
+        overallRank: $(mangerOverviewSelectors.overallRank).text() 
+      }
     }
+
   };
 
 module.exports = {
@@ -66,24 +76,13 @@ function collectClassicLeagues ($) {
 
 
 
-
-function collectManagerOverview ($) {
-  return {
-    manager: $(mangerOverviewSelectors.managerName).text(),
-    team: $(mangerOverviewSelectors.teamName).text(),  
-    overallPoints: Number($(mangerOverviewSelectors.overallPoints).text()), 
-    overallRank: $(mangerOverviewSelectors.overallRank).text() 
-  }
-}
-
-
 // transgers made cones't include wildcard transfers
 function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   var gameWeek = []
       weeklyPoints = 0
       totalTransfers = 0
       totalTransfersCosts = 0;
-      collectOverview = collectManagerOverview($);
+      collectOverview = responseGeneration.collectManagerOverview($);
  
   // map each team to an object
   for (i = 1; i <= seasonHistoryLength; i++) { 
@@ -159,12 +158,12 @@ function calculateCareerAverage (careerHistoryArr) {
 function checkPositionMovement (imageURL,postionObj) {
   switch (imageURL) {
     case postionObj.unchanged:
-      return "-"
+      return "static"
     case postionObj.up:
       return "up"
     case postionObj.down:
       return "down"
     default:
-      return "-"
+      return "static"
   }
 }
