@@ -32,19 +32,72 @@ var helpers = require(config.ROOT +'/app/helpers/index')
       if (wildCardObj) {
         playedWildCard = true;
         wildCardObj.forEach(function(wildcard){
-          groupedTransfers[wildcard-1].willdcard = true;
+          groupedTransfers[wildcard-1].wildcard = true;
         })
       } else {
         playedWildCard= false;
       }
+      var transfersWithCostings = calculateGameweekTransferCost(groupedTransfers);
+      var overall = transferOverall(transfersWithCostings);
       return {
         manager: collectOverview.manager,
         playedWildcard:playedWildCard,
         team: collectOverview.team,
-        transfers: groupedTransfers    
+        overall: {
+          totalTransfers:overall.totalTransfers,
+          totalCosts:overall.totalCosts
+        },
+        transfers: transfersWithCostings    
       }
     }
   };
+
+
+function transferOverall (transfersWithCostingsArr) {
+  var totalTransfers = 0;
+  var totalCosts = 0;
+  transfersWithCostingsArr.forEach(function(gameweek){
+    totalTransfers = totalTransfers + gameweek.players.length;
+    totalCosts = totalCosts + gameweek.cost;
+  });
+  return {
+    totalTransfers:totalTransfers,
+    totalCosts:totalCosts
+  }
+}
+
+
+
+function howManyFreeTransfersAreAvailable (previousWeeksTransfers, gameweek) {
+  if (gameweek >2 && previousWeeksTransfers === 0) {
+    return 2
+  } else {
+    return 1
+  }
+}
+
+
+// this could be replaced with an aggreation of the manger overview in the future
+function calculateGameweekTransferCost (transferHistoryArr) {
+  var previousWeeksTransfers = 0;
+  var transferHistoryWithCost = [];
+  transferHistoryArr.forEach(function(gameweek){
+    var weeksTransfers = gameweek.players.length;
+    var freeTransfers = howManyFreeTransfersAreAvailable(previousWeeksTransfers, gameweek.gameWeek);
+    if (!gameweek.wildcard) {
+      var cost = (gameweek.players.length - freeTransfers) * premierLeagueVariables.globals.transferCosts
+      gameweek.cost = (cost < 0 ? 0 : cost);
+    } else {
+      gameweek.cost = 0;
+    }
+    transferHistoryWithCost.push(gameweek);
+    previousWeeksTransfers = gameweek.players.length;
+  });
+  return transferHistoryWithCost;
+}
+
+
+
 
 function groupTransfers (transfersArr) {
   var gameWeeks=[];
@@ -57,7 +110,7 @@ function groupTransfers (transfersArr) {
     } else {
     gameWeeks[transfer.gameWeek] = {
       title: 'Game week ' + transfer.gameWeek,
-      gameWeek:transfer.gameWeek,
+      gameWeek: Number(transfer.gameWeek),
       players: [{
         out:  transfer.playerOut,
         in:  transfer.playerIn,
@@ -81,6 +134,7 @@ function populateEmptyTransfers(groupTransfersArr) {
     } else {
       normalisedArr.push({
         title: 'Game week ' + (i+1),
+        gameWeek: (i+1),
         players: []        
       })
     }
