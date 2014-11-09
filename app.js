@@ -14,7 +14,7 @@ require('./app/routes/healthcheck').routes.init(server);
 require('./app/routes/manager').routes.init(server);
 
 // fantasy service route
-require('./app/routes/fantasy-route').routes.init(server);
+//require('./app/routes/fantasy-route').routes.init(server);
 
 
 server.listen(config.PORT, function() {

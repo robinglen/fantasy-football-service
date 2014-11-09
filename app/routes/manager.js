@@ -19,6 +19,11 @@ var routes = {
 			managerController.managerController.transfers
 			);
 
+		server.get('/fantasy/manager/:managerId/gameweek/:gameweekNumber', 
+			managerMiddleware.setDefaults,
+			managerController.managerController.gameweek
+			);
+
 	}
 };
 

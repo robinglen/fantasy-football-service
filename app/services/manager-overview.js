@@ -14,8 +14,6 @@ var helpers = require(config.ROOT +'/app/helpers/index')
       var seasonHistoryLength = $(mangerOverviewSelectors.gameweekOverview.table).length -1, 
           gameWeek = [],
           weeklyPoints = [],
-          totalTransfers = [],
-          totalTransfersCosts = [],
           collectOverview = responseGeneration.collectManagerOverview($);
           collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength),
           collectCareerHistoryObj = collectCareerHistory($);
@@ -30,10 +28,6 @@ var helpers = require(config.ROOT +'/app/helpers/index')
           rank:collectOverview.overallRank,
           rankPosition:collectGameWeekData.thisSeason[seasonHistoryLength-1].positionMovement,
           teamValue:collectGameWeekData.thisSeason[seasonHistoryLength-1].teamValue,
-        },
-        transfers :{
-          transfersMade:collectGameWeekData.transfersMade,
-          transfersCost:collectGameWeekData.transfersCost
         },
         leagues: collectClassicLeagues($),
         thisSeason : collectGameWeekData.thisSeason,
@@ -75,13 +69,9 @@ function collectClassicLeagues ($) {
 }
 
 
-
-// transgers made cones't include wildcard transfers
 function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   var gameWeek = []
       weeklyPoints = 0
-      totalTransfers = 0
-      totalTransfersCosts = 0;
       collectOverview = responseGeneration.collectManagerOverview($);
  
   // map each team to an object
@@ -93,21 +83,15 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
           title: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.title).text(),
           gameWeekPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.points).text()),
           gameWeekRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.rank).text(),
-          transfersMade: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.transfers).text()),
-          transfersCost: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.transfersCosts).text()),
           teamValue: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.value).text(),
           overallPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallPoints).text()),
           overallRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallRank).text(),
           positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position)
         };
     weeklyPoints = weeklyPoints + obj.gameWeekPoints;
-    totalTransfers= totalTransfers + obj.transfersMade;
-    totalTransfersCosts= totalTransfersCosts + obj.transfersCost;
     gameWeek.push(obj);
   }
   return {
-    transfersMade: totalTransfers,
-    transfersCost: totalTransfersCosts,
     averagePoints: Number((weeklyPoints/seasonHistoryLength).toFixed(0)),
     overallPoints: gameWeek[seasonHistoryLength-1].overallPoints,
     overallRank: gameWeek[seasonHistoryLength-1].overallRank,

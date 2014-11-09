@@ -4,7 +4,8 @@ var managerMiddleware = {
 
     setDefaults: function(req, res, next) {
         var obj = {
-            managerId:  req.params.managerId
+            managerId:  req.params.managerId,
+            gameweek:  req.params.gameweekNumber !== undefined ? req.params.gameweekNumber : 1
         };
         res.locals = obj;
         next();
