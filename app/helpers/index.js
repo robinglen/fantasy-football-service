@@ -3,6 +3,12 @@ var _ = require('lodash');
 var helpers = (function() {
 
 
+	function generateLeagueURLs(opts) {
+      var url = _.template('http://fantasy.premierleague.com/my-leagues/<%= leagueId %>/standings/');
+      return  url({ 'leagueId': opts.leagueId});
+    }
+
+
 	function generateManagerURLs(opts, page) {
       switch(page) {
         case 'transfers':
@@ -20,6 +26,7 @@ var helpers = (function() {
         }
       return  url({ 'managerId': opts.managerId, 'gameweek':opts.gameweek });
     }
+
 
 
 	function collectCodeFromUrl(url,splitBefore) {
@@ -62,7 +69,8 @@ var helpers = (function() {
 		collectCodeFromUrl:collectCodeFromUrl,
 		setCacheHeader:setCacheHeader,
 		buildJSONPayload:buildJSONPayload,
-		generateManagerURLs:generateManagerURLs
+		generateManagerURLs:generateManagerURLs,
+		generateLeagueURLs:generateLeagueURLs
 	};
 
 })();

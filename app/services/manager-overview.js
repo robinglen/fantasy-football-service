@@ -5,8 +5,8 @@ var cheerio = require('cheerio');
 var _ = require('lodash');
 var mangerOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerOverview;
 var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
-var helpers = require(config.ROOT +'/app/helpers/index')
-
+var helpers = require(config.ROOT +'/app/helpers/index');
+var fantasySelectorsHelpers = require(config.ROOT +'/app/helpers/fantasy-selectors');
 
   var responseGeneration = {
     buildManagerOverviewResponse: function (cheerioBody,managerId) {
@@ -60,7 +60,7 @@ function collectClassicLeagues ($) {
         obj = {
           name: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.league).text(),
           position: $(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.rank).text(),
-          positionMovement: checkPositionMovement($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.img).attr('src'),mangerOverviewSelectors.classicLeagues.position),
+          positionMovement: fantasySelectorsHelpers.checkPositionMovement($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.position.img).attr('src'),mangerOverviewSelectors.classicLeagues.position),
           code: helpers.collectCodeFromUrl($(leagueRowSelector + mangerOverviewSelectors.classicLeagues.league).attr('href'),'/my-leagues/')
         };
     leagues.push(obj)
@@ -86,7 +86,7 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
           teamValue: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.value).text(),
           overallPoints: Number($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallPoints).text()),
           overallRank: $(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.overallRank).text(),
-          positionMovement: checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position)
+          positionMovement: fantasySelectorsHelpers.checkPositionMovement($(gameWeekRowSelector + mangerOverviewSelectors.gameweekOverview.position.img).attr('src'),mangerOverviewSelectors.gameweekOverview.position)
         };
     weeklyPoints = weeklyPoints + obj.gameWeekPoints;
     gameWeek.push(obj);
@@ -136,18 +136,4 @@ function calculateCareerAverage (careerHistoryArr) {
 
 
 
-/**
- * @param  {string} imageURL
- */
-function checkPositionMovement (imageURL,postionObj) {
-  switch (imageURL) {
-    case postionObj.unchanged:
-      return "static"
-    case postionObj.up:
-      return "up"
-    case postionObj.down:
-      return "down"
-    default:
-      return "static"
-  }
-}
+

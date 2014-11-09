@@ -13,6 +13,9 @@ require('./app/routes/healthcheck').routes.init(server);
 // manager route
 require('./app/routes/manager').routes.init(server);
 
+// leagues route
+require('./app/routes/leagues').routes.init(server);
+
 // fantasy service route
 //require('./app/routes/fantasy-route').routes.init(server);
 
