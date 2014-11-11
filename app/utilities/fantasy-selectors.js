@@ -118,6 +118,17 @@ var websiteSelectors = {
         },
         gameweek: ' td:nth-child(5)',
         total: ' td:nth-child(6)'
+    },
+
+    gameweekFixtures: {
+        table: 'table.ismFixtureTable tbody tr.ismFixture',
+        title: 'table.ismFixtureTable .ismStrongCaption',
+        row: ':nth-child(<%= number %>)',
+        fixtures: {
+            date: ' td:nth-child(1)',
+            home: ' td:nth-child(2)',
+            away: ' td:nth-child(6)'
+        }
     }
 
 
@@ -128,5 +139,6 @@ module.exports = {
     leagueOverview: websiteSelectors.leagueOverview,
     managerOverview: websiteSelectors.managerOverview,
     managerTransfers: websiteSelectors.managerTransfers,
-    managerGameweek: websiteSelectors.managerGameweek
+    managerGameweek: websiteSelectors.managerGameweek,
+    gameweekFixtures: websiteSelectors.gameweekFixtures
 };

@@ -3,6 +3,12 @@ var _ = require('lodash');
 var helpers = (function() {
 
 
+	function generateGameweekFixturesURLs(opts) {
+      var url = _.template('http://fantasy.premierleague.com/fixtures/<%= gameweek %>/');
+      return  url({ 'gameweek': opts.gameweek});
+    }
+
+
 	function generateLeagueURLs(opts) {
       var url = _.template('http://fantasy.premierleague.com/my-leagues/<%= leagueId %>/standings/');
       return  url({ 'leagueId': opts.leagueId});
@@ -70,7 +76,8 @@ var helpers = (function() {
 		setCacheHeader:setCacheHeader,
 		buildJSONPayload:buildJSONPayload,
 		generateManagerURLs:generateManagerURLs,
-		generateLeagueURLs:generateLeagueURLs
+		generateLeagueURLs:generateLeagueURLs,
+		generateGameweekFixturesURLs:generateGameweekFixturesURLs
 	};
 
 })();
