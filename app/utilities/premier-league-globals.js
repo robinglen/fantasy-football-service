@@ -7,7 +7,7 @@ var premierLeague = {
     },
     teams: [
     	{
-    		name: 'Aresenal',
+    		name: 'Arsenal',
     		shorthand: 'ars',
     	},
     	{
@@ -16,75 +16,75 @@ var premierLeague = {
     	},
     	{
     		name: 'Burnley',
-    		shorthand: '??'
+    		shorthand: 'bur'
     	},
     	{
     		name: 'Chelsea',
-    		shorthand: '??'
+    		shorthand: 'che'
     	},
     	{
     		name: 'Crystal Palace',
-    		shorthand: '??'
+    		shorthand: 'cry'
     	},
     	{
     		name: 'Everton',
-    		shorthand: '??'
+    		shorthand: 'eve'
     	},
     	{
     		name: 'Hull',
-    		shorthand: '??'
+    		shorthand: 'hul'
     	},
     	{
     		name: 'Leicester',
-    		shorthand: '??'
+    		shorthand: 'lei'
     	},
     	{
     		name: 'Liverpool',
-    		shorthand: '??'
+    		shorthand: 'liv'
     	},
     	{
     		name: 'Man City',
-    		shorthand: '??'
+    		shorthand: 'mci'
     	},
     	{
     		name: 'Man Utd',
-    		shorthand: '??'
+    		shorthand: 'mun'
     	},
     	{
     		name: 'Newcastle',
-    		shorthand: '??'
+    		shorthand: 'new'
     	},
     	{
     		name: 'QPR',
-    		shorthand: '??'
+    		shorthand: 'qpr'
     	},
     	{
     		name: 'Southampton',
-    		shorthand: '??'
+    		shorthand: 'sou'
     	},
     	{
     		name: 'Spurs',
-    		shorthand: '??'
+    		shorthand: 'tot'
     	},
     	{
     		name: 'Stoke',
-    		shorthand: '??'
+    		shorthand: 'stk'
     	},    	
     	{
     		name: 'Sunderland',
-    		shorthand: '??'
+    		shorthand: 'sun'
     	},
     	{
     		name: 'Swansea', // 18
-    		shorthand: '??'
+    		shorthand: 'swa'
     	},
     	{
     		name: 'West Brom',
-    		shorthand: '??'
+    		shorthand: 'wba'
     	},
     	{
     		name: 'West Ham',
-    		shorthand: '??'
+    		shorthand: 'whu'
     	}      	
     ]
 };

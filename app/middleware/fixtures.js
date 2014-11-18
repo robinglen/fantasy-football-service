@@ -4,7 +4,7 @@ var fixturesMiddleware = {
 
     setDefaults: function(req, res, next) {
         var obj = {
-            gameweek:  req.params.gameweekNumber !== undefined ? req.params.gameweekNumber : 1
+            gameweek:  req.params.gameweekNumber !== undefined ? req.params.gameweekNumber : null
         };
         res.locals = obj;
         next();

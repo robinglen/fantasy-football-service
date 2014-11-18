@@ -15,26 +15,21 @@ var helpers = require(config.ROOT +'/app/helpers/index');
     buildgameweekFixturesResponse: function (cheerioBody) {
       var $ = cheerioBody;
       var gamesInGameweekLength = $(gameweekFixturesSelectors.table).length ;
-      var fixturesArr = []
+      var fixturesArr = [];
       for (i = 1; i <= gamesInGameweekLength; i++) {
         var fixtureRow = _.template(gameweekFixturesSelectors.row,{number:i}),
           fixtureRowSelector = gameweekFixturesSelectors.table + fixtureRow,
           obj = {
             date: $(fixtureRowSelector + gameweekFixturesSelectors.fixtures.date).text(),
-            home: {
-              name: $(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(),
-              id:'needs look up'
-            },
-            away: {
-              name: $(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(),
-              id:'needs look up'              
-            }
+            home: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(), 'name'),
+            away: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(), 'name')
           };
           fixturesArr.push(obj);
       }; 
 
       return {
-        title: $(gameweekFixturesSelectors.title).text(),
+        gameweek: Number($(gameweekFixturesSelectors.title).text().split('Gameweek ')[1].split(' -')[0]),
+        deadline: $(gameweekFixturesSelectors.title).text().split('- ')[1],
         fixtures:fixturesArr 
       }
     }

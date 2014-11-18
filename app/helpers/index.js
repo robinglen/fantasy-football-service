@@ -1,16 +1,23 @@
+var config = require('../../config/config');
 var _ = require('lodash');
+var clubDetailsArr = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague.teams;
 
 var helpers = (function() {
 
 
 	function generateGameweekFixturesURLs(opts) {
-      var url = _.template('http://fantasy.premierleague.com/fixtures/<%= gameweek %>/');
-      return  url({ 'gameweek': opts.gameweek});
+	  if (opts.gameweek) {
+	      var url = _.template('http://fantasy.premierleague.com/fixtures/<%= gameweek %>/');
+	      return  url({ 'gameweek': opts.gameweek});
+	  } else {
+	  	return 'http://fantasy.premierleague.com/fixtures';
+	  }
     }
 
 
 	function generateLeagueURLs(opts) {
       var url = _.template('http://fantasy.premierleague.com/my-leagues/<%= leagueId %>/standings/');
+
       return  url({ 'leagueId': opts.leagueId});
     }
 
@@ -33,6 +40,18 @@ var helpers = (function() {
       return  url({ 'managerId': opts.managerId, 'gameweek':opts.gameweek });
     }
 
+    function searchForClubDetails(value, searchTerm) {
+    	var clubDetailsObj = {
+    		error: value + ' could not be found'
+    	};
+        clubDetailsArr.forEach(function(club,i){
+    		if (club[searchTerm]===value) {
+    			club.code = i+1;
+    			clubDetailsObj = club;
+    		}          
+        })
+    	return clubDetailsObj;
+    }
 
 
 	function collectCodeFromUrl(url,splitBefore) {
@@ -77,7 +96,8 @@ var helpers = (function() {
 		buildJSONPayload:buildJSONPayload,
 		generateManagerURLs:generateManagerURLs,
 		generateLeagueURLs:generateLeagueURLs,
-		generateGameweekFixturesURLs:generateGameweekFixturesURLs
+		generateGameweekFixturesURLs:generateGameweekFixturesURLs,
+		searchForClubDetails:searchForClubDetails
 	};
 
 })();
