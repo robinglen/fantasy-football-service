@@ -121,9 +121,10 @@ var websiteSelectors = {
     },
 
     gameweekFixtures: {
-        table: 'table.ismFixtureTable tbody tr.ismFixture',
+        table: 'table.ismFixtureTable tbody tr',
         title: 'table.ismFixtureTable .ismStrongCaption',
         row: ':nth-child(<%= number %>)',
+        fixture: 'ismFixture',
         fixtures: {
             date: ' td:nth-child(1)',
             home: ' td:nth-child(2)',
