@@ -23,9 +23,18 @@ var helpers = require(config.ROOT +'/app/helpers/index');
           if ($(fixtureRowSelector).hasClass(gameweekFixturesSelectors.fixture)) {
           obj = {
             date: $(fixtureRowSelector + gameweekFixturesSelectors.fixtures.date).text(),
-            home: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(), 'name'),
-            away: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(), 'name')
+            home: {
+              club: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(), 'name'),
+            },
+            away: {
+              club: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(), 'name')
+            }
           };
+          var fixtureScore = collectScoreIfAvailable($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.score).text());
+          if(fixtureScore) {
+            obj.home.score = fixtureScore.home;
+            obj.away.score = fixtureScore.away;
+          }
           fixturesArr.push(obj);
         }
       }; 
@@ -37,6 +46,18 @@ var helpers = require(config.ROOT +'/app/helpers/index');
     }
 
   };
+
+function collectScoreIfAvailable(scoreline) {
+  if (scoreline === 'v') {
+    return false;
+  } else {
+    var scoreArr = scoreline.split(' - ');
+    return {
+      home: scoreArr[0],
+      away: scoreArr[1]
+    }
+  }
+} 
 
 module.exports = {
     responseGeneration: responseGeneration
