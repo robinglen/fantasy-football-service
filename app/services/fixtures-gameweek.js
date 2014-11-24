@@ -1,17 +1,10 @@
-var config = require('../../config/config');
-var request = require('request');
-var async = require('async');
-var cheerio = require('cheerio');
-var _ = require('lodash');
-var gameweekFixturesSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').gameweekFixtures;
-var helpers = require(config.ROOT +'/app/helpers/index');
+var config = require('../../config/config'),
+ _ = require('lodash'),
+ gameweekFixturesSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').gameweekFixtures,
+ helpers = require(config.ROOT +'/app/helpers/index');
 
 
-// todo need some kind of club look up to get club ID
-// need to then add a check to see how we get player data on here
-// also how to identify if a club has two games, need wireframe for this really
-
-  var responseGeneration = {
+var responseGeneration = {
     buildgameweekFixturesResponse: function (cheerioBody) {
       var $ = cheerioBody;
       var gamesInGameweekLength = $(gameweekFixturesSelectors.table).length;

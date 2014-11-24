@@ -1,7 +1,7 @@
 {
   "name": "fantasy-league-service",
-  "version": "0.3.0",
-  "description": "a simple service to get a fantasy league",
+  "version": "0.5.0",
+  "description": "Convert fantasy.premierleague.com into a datafeed",
   "main": "app.js",
   "private": true,
   "debug": {
@@ -21,7 +21,8 @@
     "request": "~2.36.0",
     "async":"0.2.10",
     "cheerio":"0.15.0",
-    "lodash": "2.4.1"
+    "lodash": "2.4.1",
+    "winston": "^0.8.0"
   },
   "devDependencies": {
       "grunt": "0.4.4",

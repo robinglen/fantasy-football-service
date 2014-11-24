@@ -1,17 +1,18 @@
 var config = require('../../config/config'),
-	fixturesService = require(config.ROOT +'/app/services/fixtures'),
+	fixturesGameweekService = require(config.ROOT +'/app/services/fixtures-gameweek'),
 	collectHTML = require(config.ROOT +'/app/utilities/collect-html').collectHTML,
-	helpers = require(config.ROOT +'/app/helpers/index');
+  urlGenerators = require(config.ROOT +'/app/utilities/url-generators'),
+  responseBuilder = require(config.ROOT +'/app/utilities/response-builder');
 
 
 var fixturesController = {
     // controller
 
     gameweek: function(req, res) {
-       var gameweekFixturesURL = helpers.generateGameweekFixturesURLs(res.locals);
+       var gameweekFixturesURL = urlGenerators.generateGameweekFixturesURLs(res.locals);
        collectHTML(gameweekFixturesURL,function(err, htmlResponse){
-       		var gameweekFixturesResponse = fixturesService.responseGeneration.buildgameweekFixturesResponse(htmlResponse.body,res.locals.gameweekNumber);
-       		helpers.buildJSONPayload(res,200,gameweekFixturesResponse);
+       		var gameweekFixturesResponse = fixturesGameweekService.responseGeneration.buildgameweekFixturesResponse(htmlResponse.body,res.locals.gameweekNumber);
+       		responseBuilder.buildJSONPayload(res,200,gameweekFixturesResponse);
        })
     }
 
@@ -19,5 +20,5 @@ var fixturesController = {
 };
 
 module.exports = {
-    fixturesController: fixturesController
+    gameweek: fixturesController.gameweek
 };

@@ -5,13 +5,13 @@ var config  = require('../../config/config'),
 
 
 
-// route for survice
+// route for leagues
 var routes = {
 	init: function (server) {
 
 		server.get('/fantasy/league/:leagueId/overview', 
 			leaguesMiddleware.setDefaults,
-			leaguesController.leaguesController.overview
+			leaguesController.overview
 			);
 
 	}

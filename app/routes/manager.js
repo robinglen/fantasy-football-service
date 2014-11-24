@@ -5,23 +5,23 @@ var config  = require('../../config/config'),
 
 
 
-// route for survice
+// route for managers
 var routes = {
 	init: function (server) {
 
 		server.get('/fantasy/manager/:managerId/overview', 
 			managerMiddleware.setDefaults,
-			managerController.managerController.overview
+			managerController.overview
 			);
 
 		server.get('/fantasy/manager/:managerId/transfers', 
 			managerMiddleware.setDefaults,
-			managerController.managerController.transfers
+			managerController.transfers
 			);
 
 		server.get('/fantasy/manager/:managerId/gameweek/:gameweekNumber', 
 			managerMiddleware.setDefaults,
-			managerController.managerController.gameweek
+			managerController.gameweek
 			);
 
 	}

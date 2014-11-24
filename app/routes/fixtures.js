@@ -4,19 +4,18 @@ var config  = require('../../config/config'),
 	fixturesController = require(config.ROOT +'/app/controllers/fixtures');
 
 
-
-// route for survice
+// route for fixtures
 var routes = {
 	init: function (server) {
 
 		server.get('/fantasy/fixtures/gameweek', 
 			fixturesMiddleware.setDefaults,
-			fixturesController.fixturesController.gameweek
+			fixturesController.gameweek
 			);
 
 		server.get('/fantasy/fixtures/gameweek/:gameweekNumber', 
 			fixturesMiddleware.setDefaults,
-			fixturesController.fixturesController.gameweek
+			fixturesController.gameweek
 			);
 
 	}

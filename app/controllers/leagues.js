@@ -1,17 +1,18 @@
 var config = require('../../config/config'),
 	leagueOverviewService = require(config.ROOT +'/app/services/league-overview'),
 	collectHTML = require(config.ROOT +'/app/utilities/collect-html').collectHTML,
-	helpers = require(config.ROOT +'/app/helpers/index');
+  urlGenerators = require(config.ROOT +'/app/utilities/url-generators'),
+	responseBuilder = require(config.ROOT +'/app/utilities/response-builder');
 
 
 var leaguesController = {
     // controller
 
     overview: function(req, res) {
-       var leagueOverviewURL = helpers.generateLeagueURLs(res.locals);
+       var leagueOverviewURL = urlGenerators.generateLeagueURLs(res.locals);
        collectHTML(leagueOverviewURL,function(err, htmlResponse){
        		var leagueOverviewResponse = leagueOverviewService.responseGeneration.buildleagueOverviewResponse(htmlResponse.body,res.locals.leagueId);
-       		helpers.buildJSONPayload(res,200,leagueOverviewResponse);
+       		responseBuilder.buildJSONPayload(res,200,leagueOverviewResponse);
        })
     }
 
@@ -19,5 +20,5 @@ var leaguesController = {
 };
 
 module.exports = {
-    leaguesController: leaguesController
+    overview: leaguesController.overview
 };
