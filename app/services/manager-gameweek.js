@@ -1,6 +1,4 @@
 var config = require('../../config/config');
-var request = require('request');
-var async = require('async');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 var managerGameweekSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerGameweek;

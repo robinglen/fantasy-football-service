@@ -1,14 +1,14 @@
 var config = require('../../config/config'),
  _ = require('lodash'),
- gameweekFixturesSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').gameweekFixtures,
- helpers = require(config.ROOT +'/app/helpers/index');
+ gameweekFixturesSelectors = require(config.ROOT +'/app/utilities/selectors/fixtures-gameweek').fixturesGameweek,
+ clubDetails = require(config.ROOT +'/app/utilities/club-details');
 
 
 var responseGeneration = {
     buildgameweekFixturesResponse: function (cheerioBody) {
-      var $ = cheerioBody;
-      var gamesInGameweekLength = $(gameweekFixturesSelectors.table).length;
-      var fixturesArr = [];
+      var $ = cheerioBody,
+          gamesInGameweekLength = $(gameweekFixturesSelectors.table).length,
+          fixturesArr = [];
       for (i = 1; i <= gamesInGameweekLength; i++) {
         var fixtureRow = _.template(gameweekFixturesSelectors.row,{number:i}),
           fixtureRowSelector = gameweekFixturesSelectors.table + fixtureRow;
@@ -17,10 +17,10 @@ var responseGeneration = {
           obj = {
             date: $(fixtureRowSelector + gameweekFixturesSelectors.fixtures.date).text(),
             home: {
-              club: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(), 'name'),
+              club: clubDetails.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.home).text(), 'name'),
             },
             away: {
-              club: helpers.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(), 'name')
+              club: clubDetails.searchForClubDetails($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.away).text(), 'name')
             }
           };
           var fixtureScore = collectScoreIfAvailable($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.score).text());

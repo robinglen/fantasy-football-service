@@ -1,28 +1,23 @@
-var config = require('../../config/config');
-var request = require('request');
-var async = require('async');
-var cheerio = require('cheerio');
-var _ = require('lodash');
-var leagueOverviewSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').leagueOverview;
-var helpers = require(config.ROOT +'/app/helpers/index');
-var fantasySelectorsHelpers = require(config.ROOT +'/app/helpers/fantasy-selectors');
-
+var config = require('../../config/config'),
+    _ = require('lodash'),
+    leagueOverviewSelectors = require(config.ROOT +'/app/utilities/selectors/league-overview').leagueOverview,
+    selectorUtils = require(config.ROOT +'/app/utilities/selector-utils').selectorsUtils();
 
   var responseGeneration = {
     buildleagueOverviewResponse: function (cheerioBody,leagueId) {
-      var $ = cheerioBody;
-      var tableRows = $(leagueOverviewSelectors.table).length + 1;
-      var arr = [];
+      var $ = cheerioBody,
+      tableRows = $(leagueOverviewSelectors.table).length + 1,
+      arr = [];
       // map each team to an object
       for (i = 3; i <= tableRows; i++) { 
         var leagueRow = _.template(leagueOverviewSelectors.row,{number:i}),
           leagueRowSelector = leagueOverviewSelectors.table + leagueRow,
           obj = {
-            positionMovement: fantasySelectorsHelpers.checkPositionMovement($(leagueRowSelector + leagueOverviewSelectors.position.img).attr('src'),leagueOverviewSelectors.position),
+            positionMovement: selectorUtils.checkPositionMovement($(leagueRowSelector + leagueOverviewSelectors.position.img).attr('src'),leagueOverviewSelectors.position),
             team: $(leagueRowSelector + leagueOverviewSelectors.team).text(), 
             manager: {
               name: $(leagueRowSelector + leagueOverviewSelectors.manager.name).text(),
-              id: getCodeFromURL($(leagueRowSelector + leagueOverviewSelectors.manager.code).attr('href'))
+              id: $(leagueRowSelector + leagueOverviewSelectors.manager.code).attr('href').split('/entry/')[1].split('/')[0]
             },
             gameWeek: Number($(leagueRowSelector + leagueOverviewSelectors.gameweek).text()),
             total: Number($(leagueRowSelector + leagueOverviewSelectors.total).text()),
@@ -41,8 +36,3 @@ var fantasySelectorsHelpers = require(config.ROOT +'/app/helpers/fantasy-selecto
 module.exports = {
     responseGeneration: responseGeneration
 };
-
-function getCodeFromURL(href) {
-  return href.split('/entry/')[1].split('/')[0];
-}
-
