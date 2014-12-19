@@ -1,5 +1,5 @@
 var config  = require('../../config/config'),
-	helpers = require(config.ROOT +'/app/helpers/index.js');
+	responseBuilder = require(config.ROOT +'/app/utilities/response-builder');
 // route for survice
 var routes = {
 	init: function (server) {
