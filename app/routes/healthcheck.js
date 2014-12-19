@@ -4,7 +4,7 @@ var config  = require('../../config/config'),
 var routes = {
 	init: function (server) {
 		server.get('/', function(req, res) {
-			helpers.buildJSONPayload(res,200,{
+			responseBuilder.buildJSONPayload(res,200,{
 				name:'fantasy-league-service',
 				uptimeSecs: parseInt(process.uptime(), 10)
 			});
