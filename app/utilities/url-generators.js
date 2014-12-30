@@ -3,6 +3,12 @@ var config = require('../../config/config'),
 
 var urlGenerators = (function() {
 
+
+  function generatePremierLeagueFormURLs() {
+        return 'http://www.premierleague.com/en-gb/matchday/form-guide.html?tableView=total';
+    }
+
+
   function generateGameweekFixturesURLs(opts) {
       if (opts.gameweek) {
           var url = _.template('http://fantasy.premierleague.com/fixtures/<%= gameweek %>/');
@@ -39,6 +45,7 @@ var urlGenerators = (function() {
     }
 
   return {
+    generatePremierLeagueFormURLs:generatePremierLeagueFormURLs,
     generateManagerURLs:generateManagerURLs,
     generateLeagueURLs:generateLeagueURLs,
     generateGameweekFixturesURLs:generateGameweekFixturesURLs
