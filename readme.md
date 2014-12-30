@@ -40,3 +40,9 @@ Return an indepth look into the managers transfer history for the current season
 	/fantasy/manager/:int/gameweek/:int
 
 Return all the information about a managers team for a selected gameweek, includes each players performance breakdown.
+
+## Premier league
+
+	/fantasy/premier-league/form/all
+
+Get the form chart of the premier league and also the teams current league position.

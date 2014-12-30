@@ -5,7 +5,7 @@ var urlGenerators = (function() {
 
 
   function generatePremierLeagueFormURLs() {
-        return 'http://www.premierleague.com/en-gb/matchday/form-guide.html?tableView=total';
+        return 'http://www.premierleague.com/en-gb/matchday/form-guide.html?tableView=homeAwayTotalComparison';
     }
 
 
