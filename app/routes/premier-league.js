@@ -1,6 +1,5 @@
 'use strict';
 var config  = require('../../config/config'),
-	premierLeagueFormMiddleware = require(config.ROOT +'/app/middleware/premier-league-form'),
 	premierLeagueFormController = require(config.ROOT +'/app/controllers/premier-league-form');
 
 var leaguesMiddleware = require(config.ROOT +'/app/middleware/leagues'),
@@ -10,8 +9,7 @@ var leaguesMiddleware = require(config.ROOT +'/app/middleware/leagues'),
 var routes = {
 	init: function (server) {
 
-		server.get('/fantasy/premier-league/form/:type',
-			premierLeagueFormMiddleware.setDefaults,
+		server.get('/fantasy/premier-league/form',
 			premierLeagueFormController.overall
 			)
 	}

@@ -14,6 +14,9 @@ var helpers = require(config.ROOT +'/app/helpers/index');
     	for (var i = 1; i <= tableRows; i++) {
         	var formRow = _.template(premierLeagueFormSelectors.row,{number:i}),
         	formRowSelector = premierLeagueFormSelectors.table + formRow,
+        	// if we wanted to add home and away form we could do this with the adding row numbers:
+        	// home - 6
+        	// away - 8
         	formOverallRow = _.template(premierLeagueFormSelectors.form.row,{number:10}),
         	formOverallRowHTML = $(formRowSelector + formOverallRow).html(),
         	overallFormMatchBreakDown = generateMatchReports(formOverallRowHTML),
