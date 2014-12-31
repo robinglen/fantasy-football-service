@@ -44,11 +44,16 @@ var urlGenerators = (function() {
       return  url({ 'managerId': opts.managerId, 'gameweek':opts.gameweek });
     }
 
+  function collectCodeFromUrl(url,splitBefore) {
+    return url.split(splitBefore)[1].split('/')[0]
+  }
+
   return {
     generatePremierLeagueFormURLs:generatePremierLeagueFormURLs,
     generateManagerURLs:generateManagerURLs,
     generateLeagueURLs:generateLeagueURLs,
-    generateGameweekFixturesURLs:generateGameweekFixturesURLs
+    generateGameweekFixturesURLs:generateGameweekFixturesURLs,
+    collectCodeFromUrl:collectCodeFromUrl
   };
 
 })();

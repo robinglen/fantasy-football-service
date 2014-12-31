@@ -1,7 +1,7 @@
 var config = require('../../config/config');
 var cheerio = require('cheerio');
 var _ = require('lodash');
-var managerGameweekSelectors = require(config.ROOT +'/app/utilities/fantasy-selectors').managerGameweek;
+var managerGameweekSelectors = require(config.ROOT +'/app/utilities/selectors/manager-gameweek').managerGameweek;
 var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
 var managerOverviewService = require(config.ROOT +'/app/services/manager-overview');
 var helpers = require(config.ROOT +'/app/helpers/index')

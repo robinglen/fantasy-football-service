@@ -1,7 +1,7 @@
 var config = require('../../config/config'),
     _ = require('lodash'),
     leagueOverviewSelectors = require(config.ROOT +'/app/utilities/selectors/league-overview').leagueOverview,
-    selectorUtils = require(config.ROOT +'/app/utilities/selector-utils').selectorsUtils();
+    selectorUtils = require(config.ROOT +'/app/utilities/selector-utils').selectorUtils();
 
   var responseGeneration = {
     buildleagueOverviewResponse: function (cheerioBody,leagueId) {
@@ -20,7 +20,7 @@ var config = require('../../config/config'),
               id: $(leagueRowSelector + leagueOverviewSelectors.manager.code).attr('href').split('/entry/')[1].split('/')[0]
             },
             gameWeek: Number($(leagueRowSelector + leagueOverviewSelectors.gameweek).text()),
-            total: Number($(leagueRowSelector + leagueOverviewSelectors.total).text()),
+            total: $(leagueRowSelector + leagueOverviewSelectors.total).text(),
           }
         arr.push(obj)
       }

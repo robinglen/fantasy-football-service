@@ -1,4 +1,4 @@
-var selectorsUtils = (function() {
+var selectorUtils = (function() {
 
     /**
      * @param  {string} imageURL
@@ -24,5 +24,5 @@ var selectorsUtils = (function() {
 
 
 module.exports = {
-    selectorsUtils: selectorsUtils
+    selectorUtils: selectorUtils
 };

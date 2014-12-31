@@ -5,7 +5,6 @@ var premierLeagueFormSelectors = require(config.ROOT +'/app/utilities/selectors/
 var clubDetails = require(config.ROOT +'/app/utilities/club-details');
 var helpers = require(config.ROOT +'/app/helpers/index');
 
-
  var responseGeneration = {
     buildOverallFormResponse: function (cheerioBody) {
     	var $ = cheerioBody,
