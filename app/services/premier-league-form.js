@@ -2,25 +2,26 @@ var config = require('../../config/config');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 var premierLeagueFormSelectors = require(config.ROOT +'/app/utilities/selectors/premier-league-form').premierLeagueForm;
-var premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague;
-var helpers = require(config.ROOT +'/app/helpers/index')
+var clubDetails = require(config.ROOT +'/app/utilities/club-details');
+var helpers = require(config.ROOT +'/app/helpers/index');
 
 
-  var responseGeneration = {
+ var responseGeneration = {
     buildOverallFormResponse: function (cheerioBody) {
     	var $ = cheerioBody,
     	tableRows = $(premierLeagueFormSelectors.table).length,
     	arr = [];
-    	for (i = 1; i <= tableRows; i++) {
+    	for (var i = 1; i <= tableRows; i++) {
         	var formRow = _.template(premierLeagueFormSelectors.row,{number:i}),
         	formRowSelector = premierLeagueFormSelectors.table + formRow,
         	formOverallRow = _.template(premierLeagueFormSelectors.form.row,{number:10}),
-        	formOverallRowSelector = formRowSelector + formOverallRow,
+        	formOverallRowHTML = $(formRowSelector + formOverallRow).html(),
+        	overallFormMatchBreakDown = generateMatchReports(formOverallRowHTML),
         	obj = {
-        		club: $(formRowSelector + premierLeagueFormSelectors.team).text(),
+        		club: clubDetails.searchForClubDetails($(formRowSelector + premierLeagueFormSelectors.team).text(), 'name'),
         		leaguePosition: Number($(formRowSelector + premierLeagueFormSelectors.leaguePosition).text()),
         		form: {
-        			overall: $(formOverallRowSelector).text()
+        			overall: overallFormMatchBreakDown
         		}
         	};
         	arr.push(obj)
@@ -28,6 +29,35 @@ var helpers = require(config.ROOT +'/app/helpers/index')
 	    return arr
     }
   };
+
+// passing flat HTML and then reconverting to cheerio object is way faster than passing
+// object and searching again - refactor like this in other places 
+function generateMatchReports (formRowHTML) {
+	var $ = cheerio.load(formRowHTML);
+	var matchReportArr = [],
+		matchSelector = premierLeagueFormSelectors.form.matches,
+		matches = $(matchSelector).length;
+	for (var j = 0; j < matches; j++) {
+		var obj = {
+			status: $(matchSelector)[j].attribs.class,
+			opponent: clubDetails.searchForClubDetails($(matchSelector)[j].attribs.clubname, 'name'),
+			played: convertPlayedLocationToWord($(matchSelector)[j].attribs.homeaway),
+			score: $(matchSelector)[j].attribs.score
+		}
+		matchReportArr.push(obj);
+	}
+	return matchReportArr
+
+}
+
+function convertPlayedLocationToWord (homeawayCharacter) {
+	if (homeawayCharacter==="H") {
+		return "Home"
+	} else {
+		return "Away"
+	}
+}
+
 
 
 

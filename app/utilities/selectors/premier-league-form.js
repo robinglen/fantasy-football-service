@@ -7,9 +7,10 @@ var websiteSelectors = {
         leaguePosition: ' td.col-rank',
         form: {
             row: ' td:nth-child(<%= number %>)',
-            won: ' span.WON',
-            drawn: ' span.DRAWN',
-            lost: ' span.lost',
+            matches: ' span',
+            won: '.WON',
+            drawn: '.DRAWN',
+            lost: '.LOST'
         }
     }
 
