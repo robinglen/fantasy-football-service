@@ -9,7 +9,7 @@ var config  = require('../../config/config'),
 var routes = {
 	init: function (server) {
 
-		server.get('/fantasy/league/:leagueId/overview', 
+		server.get('/league/:leagueId/overview', 
 			leaguesMiddleware.setDefaults,
 			leaguesController.overview
 			);

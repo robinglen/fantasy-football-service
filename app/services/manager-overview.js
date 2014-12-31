@@ -35,6 +35,9 @@ var urlGenerators = require(config.ROOT +'/app/utilities/url-generators');
       }
     },
 
+
+    // could start to move these from parsing whole dom object 
+    // to create new smaller objects with just this
     collectManagerOverview: function ($) {
       return {
         manager: $(mangerOverviewSelectors.managerName).text(),
@@ -50,7 +53,8 @@ module.exports = {
     responseGeneration: responseGeneration
 };
 
-
+// could start to move these from parsing whole dom object 
+// to create new smaller objects with just this
 function collectClassicLeagues ($) {
   var leagues = [];
   var leaguesTableLength = $(mangerOverviewSelectors.classicLeagues.table).length -1;
@@ -68,7 +72,8 @@ function collectClassicLeagues ($) {
   return leagues;
 }
 
-
+// could start to move these from parsing whole dom object 
+// to create new smaller objects with just this
 function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
   var gameWeek = []
       weeklyPoints = 0
@@ -101,6 +106,8 @@ function collectGameWeekRelated ($,managerId,seasonHistoryLength) {
    }  
 }
 
+// could start to move these from parsing whole dom object 
+// to create new smaller objects with just this
 function collectCareerHistory ($) {
   var careerHistory =[];
   var careerHistoryObj ={};

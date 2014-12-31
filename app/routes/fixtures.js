@@ -8,12 +8,12 @@ var config  = require('../../config/config'),
 var routes = {
 	init: function (server) {
 
-		server.get('/fantasy/fixtures/gameweek', 
+		server.get('/fixtures/gameweek', 
 			fixturesMiddleware.setDefaults,
 			fixturesController.gameweek
 			);
 
-		server.get('/fantasy/fixtures/gameweek/:gameweekNumber', 
+		server.get('/fixtures/gameweek/:gameweekNumber', 
 			fixturesMiddleware.setDefaults,
 			fixturesController.gameweek
 			);

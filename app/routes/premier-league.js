@@ -9,7 +9,7 @@ var leaguesMiddleware = require(config.ROOT +'/app/middleware/leagues'),
 var routes = {
 	init: function (server) {
 
-		server.get('/fantasy/premier-league/form',
+		server.get('/premier-league/form',
 			premierLeagueFormController.overall
 			)
 	}

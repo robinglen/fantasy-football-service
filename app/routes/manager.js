@@ -9,17 +9,17 @@ var config  = require('../../config/config'),
 var routes = {
 	init: function (server) {
 
-		server.get('/fantasy/manager/:managerId/overview', 
+		server.get('/manager/:managerId/overview', 
 			managerMiddleware.setDefaults,
 			managerController.overview
 			);
 
-		server.get('/fantasy/manager/:managerId/transfers', 
+		server.get('/manager/:managerId/transfers', 
 			managerMiddleware.setDefaults,
 			managerController.transfers
 			);
 
-		server.get('/fantasy/manager/:managerId/gameweek/:gameweekNumber', 
+		server.get('/manager/:managerId/gameweek/:gameweekNumber', 
 			managerMiddleware.setDefaults,
 			managerController.gameweek
 			);
