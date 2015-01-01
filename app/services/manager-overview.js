@@ -17,6 +17,7 @@ var urlGenerators = require(config.ROOT +'/app/utilities/url-generators');
           collectOverview = responseGeneration.collectManagerOverview($);
           collectGameWeekData = collectGameWeekRelated($,managerId,seasonHistoryLength),
           collectCareerHistoryObj = collectCareerHistory($);
+      console.log(managerId)
       return {
         id:managerId,
         manager: collectOverview.manager,
