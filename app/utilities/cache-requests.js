@@ -15,6 +15,7 @@ var cacheRequests = {
 
 
     // basic basic cache for catching the same urls
+    // could change the timestamp to now use the new dates system in fixtures
 
     checkKeys: function(url) {
         if (keys[url]) {

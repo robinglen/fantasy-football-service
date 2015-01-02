@@ -1,9 +1,14 @@
 var premierLeague = {
 
     globals: {
-        teams: 20,
         gameweeks: 38,
         transferCosts: 4
+    },
+    season: {
+        start: {
+            year: 2014,
+            month: "Aug"
+        } 
     },
     teams: [
     	{

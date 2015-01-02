@@ -1,6 +1,7 @@
 var config = require('../../config/config'),
  _ = require('lodash'),
  gameweekFixturesSelectors = require(config.ROOT +'/app/utilities/selectors/fixtures-gameweek').fixturesGameweek,
+ premierLeagueVariables = require(config.ROOT +'/app/utilities/premier-league-globals').premierLeague,
  clubDetails = require(config.ROOT +'/app/utilities/club-details'),
  moment = require('moment');
 
@@ -16,13 +17,13 @@ var responseGeneration = {
       var $ = cheerioBody,
           gamesInGameweekLength = $(gameweekFixturesSelectors.table).length,
           fixturesArr = [],
-          deadline = moment($(gameweekFixturesSelectors.title).text().split('- ')[1], 'DD MMM hh:mm').format('LLLL');
+          deadline = constructFullDates($(gameweekFixturesSelectors.title).text().split('- ')[1]);
       for (i = 1; i <= gamesInGameweekLength; i++) {
         var fixtureRow = _.template(gameweekFixturesSelectors.row,{number:i}),
           fixtureRowSelector = gameweekFixturesSelectors.table + fixtureRow;
           // horrible case as couldn't find: $('table.ismFixtureTable tbody tr.ismFixture:nth-child(2)')
           if ($(fixtureRowSelector).hasClass(gameweekFixturesSelectors.fixture)) {
-          var date = moment($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.date).text(), 'DD MMM hh:mm').format('LLLL');
+          var date = constructFullDates($(fixtureRowSelector + gameweekFixturesSelectors.fixtures.date).text());
           obj = {
             date: date,
             kickoff: moment(date).format('HH:mm'),
@@ -51,6 +52,21 @@ var responseGeneration = {
     }
 
   };
+
+
+
+function constructFullDates(dateString,format) {
+  var currentMonth = moment(dateString,'DD MMM hh:mm').format('M');
+  var startMonth = moment(premierLeagueVariables.season.start.month,'MMM').format('M');
+  var year;
+  if (currentMonth >= startMonth) {
+    year = premierLeagueVariables.season.start.year;
+  } else {
+    year =  premierLeagueVariables.season.start.year + 1;
+  }
+  var longDate = moment(dateString, 'DD MMM hh:mm').year(year).format();
+  return longDate;
+} 
 
 function flattenMatchesIntoMatchDay(groupMatchesByDateObj) {
   var collectMatchDaysTogetherArr = [];
