@@ -26,7 +26,8 @@ var helpers = require(config.ROOT +'/app/helpers/index');
         			overall: overallFormMatchBreakDown
         		}
         	};
-        	arr.push(obj)
+            obj.id = obj.club.code;
+        	arr.push(obj);
     	} 
 	    return arr
     }
