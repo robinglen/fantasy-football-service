@@ -26,7 +26,8 @@ var helpers = require(config.ROOT +'/app/helpers/index');
         			overall: overallFormMatchBreakDown
         		}
         	};
-        	arr.push(obj)
+            obj.id = obj.club.code;
+        	arr.push(obj);
     	} 
 	    return arr
     }
@@ -41,7 +42,7 @@ function generateMatchReports (formRowHTML) {
 		matches = $(matchSelector).length;
 	for (var j = 0; j < matches; j++) {
 		var obj = {
-			status: $(matchSelector)[j].attribs.class,
+			status: convertGameResultIntoCharacter($(matchSelector)[j].attribs.class),
 			opponent: clubDetails.searchForClubDetails($(matchSelector)[j].attribs.clubname, 'name'),
 			played: convertPlayedLocationToWord($(matchSelector)[j].attribs.homeaway),
 			score: $(matchSelector)[j].attribs.score
@@ -52,14 +53,24 @@ function generateMatchReports (formRowHTML) {
 
 }
 
-function convertPlayedLocationToWord (homeawayCharacter) {
-	if (homeawayCharacter==="H") {
-		return "Home"
-	} else {
-		return "Away"
-	}
+function convertGameResultIntoCharacter (status) {
+	switch(status) {
+    case "WON":
+        return "w"
+    case "DRAWN":
+        return "d"
+    default:
+        return "l"
+    }
 }
 
+function convertPlayedLocationToWord (homeawayCharacter) {
+    if (homeawayCharacter==="H") {
+        return "Home"
+    } else {
+        return "Away"
+    }
+}
 
 
 
