@@ -9,6 +9,10 @@ var appConfiguration = {
 
         server.use(restify.queryParser());
 
+        server.use(restify.CORS(){
+        	origins: ['https://www.finaleleven.com', 'http://finaleleven.com', 'http://127.0.0.1']
+        });
+
         return server;
     }
 };
