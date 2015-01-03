@@ -9,6 +9,8 @@ var appConfiguration = {
 
         server.use(restify.queryParser());
 
+        server.use(restify.CORS());
+
         return server;
     }
 };
