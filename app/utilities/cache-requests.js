@@ -1,9 +1,27 @@
 // config
 var config = require('../../config/config'),
 	moment = require('moment'),
-	keys = {};
+    keys = {},
+    yearInMilliseconds = 31556952000,
+    monthInMilliseconds = 2628000000,
+    weekInMilliseconds = 604800000,
+    dayInMilliseconds = 86400000,
+    hourInMilliseconds = 3600000;
 
 var cacheRequests = {
+
+    generateTTLFromFixtureDate: function(date, type) {
+        var cacheStamp = moment();
+        var dateStamp = moment(date);
+        var timeToFixture = moment(dateStamp).diff(cacheStamp, 'milliseconds');
+        var ttl;
+        if (timeToFixture < -dayInMilliseconds) {
+            ttl = yearInMilliseconds;
+        } else {
+            ttl = hourInMilliseconds;
+        }
+        return ttl;
+    },
 	
     generate: function(cachedRequest) {
     	var cacheStamp = moment();
@@ -18,12 +36,14 @@ var cacheRequests = {
     // could change the timestamp to now use the new dates system in fixtures
 
     checkKeys: function(url) {
+
         if (keys[url]) {
 
         	var timeStamp = moment();
 
         	if (timeStamp.isBefore(keys[url].ttl)) {
-        		return keys[url].response;
+                return keys[url].response;
+
         	} else {
         		keys[url] = {};
         		return false;

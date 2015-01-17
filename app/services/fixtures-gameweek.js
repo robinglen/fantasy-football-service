@@ -55,14 +55,12 @@ var responseGeneration = {
 
 
 
-function constructFullDates(dateString,format) {
-  var currentMonth = moment(dateString,'DD MMM hh:mm').format('M');
-  var startMonth = moment(premierLeagueVariables.season.start.month,'MMM').format('M');
-  var year;
-  if (currentMonth >= startMonth) {
-    year = premierLeagueVariables.season.start.year;
-  } else {
-    year =  premierLeagueVariables.season.start.year + 1;
+function constructFullDates(dateString) {
+  var month = Number(moment(dateString, 'DD MMM hh:mm').format('M'));
+  var lastMonthOfSeason = Number(moment(premierLeagueVariables.season.end.month, 'MMM').format('M'));
+  var year = premierLeagueVariables.season.start.year;
+  if(month<=lastMonthOfSeason) {
+    year = premierLeagueVariables.season.end.year;
   }
   var longDate = moment(dateString, 'DD MMM hh:mm').year(year).format();
   return longDate;
@@ -96,6 +94,11 @@ function groupMatchesByDate(fixturesArr) {
 } 
 
 
+function findLastFixtureInAGameweek(fixturesObj) {
+  var lastMatchDay = _.last(fixturesObj.fixtures);
+  var lastMatch = _.last(lastMatchDay.matches);
+  return lastMatch.date;
+} 
 
 
 function collectScoreIfAvailable(scoreline) {
@@ -111,7 +114,8 @@ function collectScoreIfAvailable(scoreline) {
 } 
 
 module.exports = {
-    responseGeneration: responseGeneration
+    responseGeneration: responseGeneration,
+    findLastFixtureInAGameweek:findLastFixtureInAGameweek
 };
 
 

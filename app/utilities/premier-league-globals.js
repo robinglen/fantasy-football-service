@@ -8,7 +8,11 @@ var premierLeague = {
         start: {
             year: 2014,
             month: "Aug"
-        } 
+        },
+        end: {
+            year: 2015,
+            month: "Jul"
+        }  
     },
     teams: [
     	{

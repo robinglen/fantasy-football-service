@@ -17,10 +17,12 @@ var fixturesController = {
       } else {
          collectHTML(gameweekFixturesURL,function(err, htmlResponse){
             var gameweekFixturesResponse = fixturesGameweekService.responseGeneration.buildgameweekFixturesResponse(htmlResponse.body,res.locals.gameweekNumber);
-         		cacheRequests.generate({
+         		var lastMatchOfGameWeek = fixturesGameweekService.findLastFixtureInAGameweek(gameweekFixturesResponse);
+            var ttl = cacheRequests.generateTTLFromFixtureDate(lastMatchOfGameWeek);
+            cacheRequests.generate({
                 response: gameweekFixturesResponse,
                 url: gameweekFixturesURL,
-                ttl: 3600000
+                ttl: ttl
               });
             responseBuilder.buildJSONPayload(res,200,gameweekFixturesResponse);
          })
